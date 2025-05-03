@@ -10,12 +10,15 @@
     body {
       background: url('https://i.imgur.com/x3b7e2K.jpeg') no-repeat center center fixed;
       background-size: cover;
+      overflow-x: hidden;
     }
+
     .glass {
       background: rgba(30, 30, 30, 0.7);
       backdrop-filter: blur(20px);
       -webkit-backdrop-filter: blur(20px);
     }
+
     .gradient-text {
       background: linear-gradient(90deg, #fff, #999, #000);
       background-size: 200% auto;
@@ -24,10 +27,16 @@
       color: transparent;
       animation: shine 4s linear infinite;
     }
+
     @keyframes shine {
       to {
         background-position: 200% center;
       }
+    }
+
+    /* Убираем аудиоплеер */
+    audio {
+      display: none;
     }
   </style>
 
@@ -45,10 +54,12 @@
 </head>
 <body class="min-h-screen flex items-center justify-center px-4 py-10">
 
-  <!-- Background audio (невидимый) -->
+  <!-- Фоновая музыка -->
   <audio src="audio/Nuts-Instrumental.mp3" autoplay loop></audio>
 
-  <div class="glass rounded-3xl max-w-xl w-full shadow-2xl text-white p-6">
+  <!-- Контейнер с 3D-эффектом -->
+  <div id="tilt-card" class="glass rounded-3xl max-w-xl w-full shadow-2xl text-white p-6 transition-transform duration-200">
+    
     <!-- Header -->
     <div class="relative">
       <img src="https://i.imgur.com/x3b7e2K.jpeg" class="w-full h-40 object-cover rounded-2xl opacity-30" />
@@ -81,5 +92,24 @@
       </a>
     </div>
   </div>
+
+  <!-- JS для 3D наклона -->
+  <script>
+    const card = document.getElementById('tilt-card');
+
+    document.addEventListener('mousemove', (e) => {
+      const { clientX: x, clientY: y } = e;
+      const { innerWidth: w, innerHeight: h } = window;
+
+      const rotateY = ((x / w) * 30) - 15;
+      const rotateX = ((y / h) * -30) + 15;
+
+      card.style.transform = `rotateX(${rotateX}deg) rotateY(${rotateY}deg)`;
+    });
+
+    document.addEventListener('mouseleave', () => {
+      card.style.transform = 'rotateX(0deg) rotateY(0deg)';
+    });
+  </script>
 </body>
 </html>
