@@ -14,11 +14,9 @@
     }
 
     .glass {
-      background: linear-gradient(145deg, #000, #999, #000);
+      background: rgba(30, 30, 30, 0.7);
       backdrop-filter: blur(20px);
       -webkit-backdrop-filter: blur(20px);
-      border-radius: 1.5rem;
-      transition: box-shadow 0.3s ease;
     }
 
     .gradient-text {
@@ -43,15 +41,17 @@
     #easter-egg {
       display: none;
       position: fixed;
-      bottom: 20px;
+      bottom: 40px;
       left: 50%;
       transform: translateX(-50%);
-      background: rgba(0,0,0,0.8);
+      background: linear-gradient(90deg, #000, #999, #000);
       color: white;
-      padding: 10px 20px;
-      border-radius: 10px;
+      padding: 12px 24px;
+      border-radius: 12px;
       font-size: 14px;
       z-index: 50;
+      text-align: center;
+      box-shadow: 0 0 20px rgba(255, 255, 255, 0.3);
     }
 
     #easter-egg.active {
@@ -66,10 +66,10 @@
       font-size: 12px;
       color: rgba(255,255,255,0.3);
       user-select: none;
+      z-index: 10;
     }
   </style>
 
-  <!-- Анимированный title -->
   <script>
     let titleText = " ✦ Enjoylean ✦ ";
     let speed = 300;
@@ -86,12 +86,12 @@
   <!-- Фоновая музыка -->
   <audio src="audio/Nuts-instrumental.mp3" autoplay loop></audio>
 
-  <!-- Пасхалка -->
+  <!-- Дисклеймер -->
   <div id="easter-egg">Это дисклеймер: вся информация носит развлекательный характер.</div>
   <div id="hint">Ctrl — дисклеймер</div>
 
-  <!-- Контейнер с 3D-эффектом -->
-  <div id="tilt-card" class="glass max-w-xl w-full shadow-2xl text-white p-6 transition-transform duration-200">
+  <!-- Основной блок -->
+  <div id="tilt-card" class="glass rounded-3xl max-w-xl w-full shadow-2xl text-white p-6 transition-transform duration-200">
     
     <!-- Header -->
     <div class="relative">
@@ -126,7 +126,7 @@
     </div>
   </div>
 
-  <!-- JS для 3D наклона + пасхалка -->
+  <!-- JS для 3D + пасхалка -->
   <script>
     const card = document.getElementById('tilt-card');
     const egg = document.getElementById('easter-egg');
@@ -139,15 +139,12 @@
       const rotateX = ((y / h) * -30) + 15;
 
       card.style.transform = `rotateX(${rotateX}deg) rotateY(${rotateY}deg)`;
-      card.style.boxShadow = `${-rotateY}px ${rotateX}px 40px rgba(0,0,0,0.4)`;
     });
 
     document.addEventListener('mouseleave', () => {
       card.style.transform = 'rotateX(0deg) rotateY(0deg)';
-      card.style.boxShadow = `0 0 40px rgba(0,0,0,0.4)`;
     });
 
-    // Пасхалка: при нажатии только Ctrl
     document.addEventListener('keydown', (e) => {
       if (e.ctrlKey && !e.altKey && !e.shiftKey && !e.metaKey) {
         egg.classList.add('active');
