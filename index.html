@@ -87,7 +87,24 @@
     window.addEventListener('resize', resize);
     resize();
 
-    // Класс звезды
+    // Рисуем маленькую ч/б звёздочку с лучиками (крест и наклонный крест)
+    function drawStarShape(x, y, size) {
+      ctx.strokeStyle = 'white';
+      ctx.lineWidth = 1;
+      ctx.beginPath();
+      // Вертикаль и горизонталь
+      ctx.moveTo(x - size, y);
+      ctx.lineTo(x + size, y);
+      ctx.moveTo(x, y - size);
+      ctx.lineTo(x, y + size);
+      // Диагонали
+      ctx.moveTo(x - size * 0.7, y - size * 0.7);
+      ctx.lineTo(x + size * 0.7, y + size * 0.7);
+      ctx.moveTo(x - size * 0.7, y + size * 0.7);
+      ctx.lineTo(x + size * 0.7, y - size * 0.7);
+      ctx.stroke();
+    }
+
     class Star {
       constructor(x, y, radius, color, isPremium) {
         this.x = x;
@@ -117,25 +134,24 @@
       draw() {
         ctx.save();
         ctx.globalAlpha = this.alpha;
-        ctx.beginPath();
         if (this.isPremium) {
           // Цветные звёзды (круг + крест)
           ctx.strokeStyle = this.color;
           ctx.fillStyle = this.color;
           ctx.lineWidth = 1;
           const r = this.radius;
+          ctx.beginPath();
           ctx.arc(this.x, this.y, r, 0, Math.PI * 2);
           ctx.fill();
+          ctx.beginPath();
           ctx.moveTo(this.x - r * 2, this.y);
           ctx.lineTo(this.x + r * 2, this.y);
           ctx.moveTo(this.x, this.y - r * 2);
           ctx.lineTo(this.x, this.y + r * 2);
           ctx.stroke();
         } else {
-          // Чёрно-белые звёзды — просто круги
-          ctx.fillStyle = 'white';
-          ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
-          ctx.fill();
+          // Чёрно-белые звёзды с лучиками
+          drawStarShape(this.x, this.y, this.radius + 1);
         }
         ctx.restore();
       }
@@ -148,7 +164,7 @@
     for (let i = 0; i < totalStars; i++) {
       const x = Math.random() * width;
       const y = Math.random() * height;
-      const radius = Math.random() * 1.3 + 0.3;
+      const radius = Math.random() * 1.2 + 0.6; // размер звезды
       const isPremium = Math.random() < 0.3; // 30% премиум цветных
       const color = isPremium ? premiumColors[Math.floor(Math.random() * premiumColors.length)] : '#fff';
       stars.push(new Star(x, y, radius, color, isPremium));
