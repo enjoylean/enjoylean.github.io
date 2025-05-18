@@ -17,6 +17,7 @@
       background: rgba(30, 30, 30, 0.7);
       backdrop-filter: blur(20px);
       -webkit-backdrop-filter: blur(20px);
+      transition: box-shadow 0.2s ease;
     }
 
     .gradient-text {
@@ -34,13 +35,32 @@
       }
     }
 
-    /* Убираем аудиоплеер */
     audio {
       display: none;
     }
+
+    /* Пасхалка */
+    #easter-egg {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%) scale(0);
+      transition: transform 0.5s ease;
+      z-index: 50;
+      pointer-events: none;
+    }
+
+    #easter-egg img {
+      width: 300px;
+      border-radius: 20px;
+      box-shadow: 0 0 30px red;
+    }
+
+    #easter-egg.active {
+      transform: translate(-50%, -50%) scale(1);
+    }
   </style>
 
-  <!-- Анимированный title -->
   <script>
     let titleText = " ✦ Enjoylean ✦ ";
     let speed = 300;
@@ -54,12 +74,16 @@
 </head>
 <body class="min-h-screen flex items-center justify-center px-4 py-10">
 
-  <!-- Фоновая музыка -->
+  <!-- Музыка -->
   <audio src="audio/Nuts-instrumental.mp3" autoplay loop></audio>
 
-  <!-- Контейнер с 3D-эффектом -->
-  <div id="tilt-card" class="glass rounded-3xl max-w-xl w-full shadow-2xl text-white p-6 transition-transform duration-200">
-    
+  <!-- Пасхалка -->
+  <div id="easter-egg">
+    <img src="https://i.imgur.com/Bz4QvFm.png" alt="easter egg" />
+  </div>
+
+  <!-- Карточка -->
+  <div id="tilt-card" class="glass rounded-3xl max-w-xl w-full text-white p-6 transition-transform duration-200 shadow-2xl">
     <!-- Header -->
     <div class="relative">
       <img src="https://i.imgur.com/NfQotT7.jpeg" class="w-full h-40 object-cover rounded-2xl opacity-30" />
@@ -82,7 +106,7 @@
       </div>
     </div>
 
-    <!-- Buttons -->
+    <!-- Кнопки -->
     <div class="mt-6 flex flex-col sm:flex-row justify-center gap-4">
       <a href="https://discord.com/invite/YOUR_INVITE" target="_blank" class="sm:w-36 text-center bg-gradient-to-r from-gray-900 to-gray-700 hover:from-gray-700 hover:to-gray-900 p-3 rounded-xl font-semibold transition shadow-md">
         Discord →
@@ -93,9 +117,10 @@
     </div>
   </div>
 
-  <!-- JS для 3D наклона -->
+  <!-- Скрипт для 3D и пасхалки -->
   <script>
     const card = document.getElementById('tilt-card');
+    const egg = document.getElementById('easter-egg');
 
     document.addEventListener('mousemove', (e) => {
       const { clientX: x, clientY: y } = e;
@@ -105,10 +130,23 @@
       const rotateX = ((y / h) * -30) + 15;
 
       card.style.transform = `rotateX(${rotateX}deg) rotateY(${rotateY}deg)`;
+      card.style.boxShadow = `${-rotateY}px ${rotateX}px 40px rgba(0,0,0,0.4)`;
     });
 
     document.addEventListener('mouseleave', () => {
       card.style.transform = 'rotateX(0deg) rotateY(0deg)';
+      card.style.boxShadow = `0 0 40px rgba(0,0,0,0.4)`;
+    });
+
+    // Пасхалка на Ctrl+D
+    document.addEventListener('keydown', (e) => {
+      if (e.ctrlKey && e.key === 'd') {
+        e.preventDefault();
+        egg.classList.add('active');
+        setTimeout(() => {
+          egg.classList.remove('active');
+        }, 3000);
+      }
     });
   </script>
 </body>
