@@ -1,149 +1,106 @@
 <!DOCTYPE html>
-<html lang="ru">
+<html lang="ru" class="bg-black">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>✦ Enjoylean ✦</title>
+  <title>Enjoylean</title>
   <script src="https://cdn.tailwindcss.com"></script>
-  <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
   <style>
     body {
       background: url('https://i.imgur.com/ojDkveH.jpeg') no-repeat center center fixed;
       background-size: cover;
       overflow-x: hidden;
     }
-
     .glass {
-      background-color: rgba(0, 0, 0, 0.6);
+      background: rgba(0, 0, 0, 0.6);
       backdrop-filter: blur(20px);
       -webkit-backdrop-filter: blur(20px);
     }
-
     .gradient-text {
       background: linear-gradient(90deg, #fff, #999, #000);
-      background-size: 200% auto;
       background-clip: text;
       -webkit-background-clip: text;
       color: transparent;
       animation: shine 4s linear infinite;
     }
-
     @keyframes shine {
       to {
         background-position: 200% center;
       }
     }
-
-    .disclaimer-box {
+    .neverlose-panel {
+      background-color: #101014;
+      border: 1px solid #333;
+      color: #fff;
+      padding: 16px;
+      border-radius: 10px;
+      width: 500px;
       position: fixed;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      background: linear-gradient(to bottom right, #000, #555);
-      color: white;
-      padding: 20px;
-      border-radius: 20px;
-      box-shadow: 0 0 20px rgba(255, 255, 255, 0.2);
-      display: none;
-      z-index: 9999;
-      max-width: 90%;
-      text-align: center;
-      font-size: 14px;
-    }
-
-    .cheat-menu {
-      display: none;
-      position: fixed;
-      top: 15%;
+      top: 100px;
       left: 50%;
       transform: translateX(-50%);
-      width: 420px;
-      background: rgba(20, 20, 20, 0.95);
-      border: 1px solid #0ff;
-      border-radius: 12px;
-      box-shadow: 0 0 30px rgba(0, 255, 255, 0.3);
-      z-index: 10000;
-      padding: 20px;
-      color: white;
-      font-family: 'Consolas', monospace;
-    }
-
-    .cheat-menu h2 {
-      font-size: 18px;
-      border-bottom: 1px solid #444;
-      padding-bottom: 5px;
-      margin-bottom: 10px;
-      color: #0ff;
-    }
-
-    .cheat-menu label {
-      display: block;
-      margin: 8px 0;
-    }
-
-    audio {
+      z-index: 9999;
       display: none;
+    }
+    .avatar-border {
+      position: absolute;
+      top: -12px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 120px;
+      height: 120px;
+      border-radius: 50%;
+      border: 2px dashed white;
+      animation: spin 5s linear infinite;
+      pointer-events: none;
+    }
+    @keyframes spin {
+      from { transform: translateX(-50%) rotate(0deg); }
+      to { transform: translateX(-50%) rotate(360deg); }
     }
   </style>
 </head>
 <body class="min-h-screen flex items-center justify-center px-4 py-10">
-
-  <!-- Аудио -->
   <audio src="audio/Nuts-instrumental.mp3" autoplay loop></audio>
-
-  <!-- Основной блок -->
-  <div id="tilt-card" class="glass rounded-3xl max-w-xl w-full shadow-2xl text-white p-6 transition-transform duration-200">
+  <div id="tilt-card" class="glass rounded-3xl max-w-xl w-full shadow-2xl text-white p-6 transition-transform duration-200 relative">
     <div class="relative">
       <img src="https://i.imgur.com/NfQotT7.jpeg" class="w-full h-40 object-cover rounded-2xl opacity-30" />
       <div class="absolute inset-0 flex justify-center -top-10">
+        <div id="avatar-border" class="avatar-border hidden"></div>
         <img src="https://i.imgur.com/1Fu8VEQ.jpeg" class="w-24 h-24 rounded-full border-4 border-gray-900 shadow-xl" />
       </div>
     </div>
-
     <div class="mt-14 text-center">
       <h1 class="text-3xl font-bold gradient-text">Enjoylean</h1>
       <p class="mt-2 italic text-gray-300">insaneweb co-owner</p>
       <div class="flex justify-center gap-4 mt-4 text-xl text-blue-400">
-        <a href="#"><i class="fab fa-spotify hover:text-green-400 transition"></i></a>
-        <a href="#"><i class="fab fa-youtube hover:text-red-500 transition"></i></a>
-        <a href="#"><i class="fab fa-steam hover:text-gray-300 transition"></i></a>
+        <a href="https://open.spotify.com/" target="_blank"><i class="fab fa-spotify hover:text-green-400 transition"></i></a>
+        <a href="https://www.youtube.com/" target="_blank"><i class="fab fa-youtube hover:text-red-500 transition"></i></a>
+        <a href="https://store.steampowered.com/" target="_blank"><i class="fab fa-steam hover:text-gray-300 transition"></i></a>
         <a href="#"><i class="fas fa-gamepad hover:text-indigo-400 transition"></i></a>
         <a href="#"><i class="fas fa-folder hover:text-teal-400 transition"></i></a>
       </div>
     </div>
-
     <div class="mt-6 flex flex-col sm:flex-row justify-center gap-4">
-      <a href="https://discord.com/" target="_blank" class="sm:w-36 text-center bg-gradient-to-r from-gray-900 to-gray-700 hover:from-gray-700 hover:to-gray-900 p-3 rounded-xl font-semibold transition shadow-md">Discord →</a>
+      <a href="https://discord.com/invite/YOUR_INVITE" target="_blank" class="sm:w-36 text-center bg-gradient-to-r from-gray-900 to-gray-700 hover:from-gray-700 hover:to-gray-900 p-3 rounded-xl font-semibold transition shadow-md">Discord →</a>
       <a href="https://t.me/enjoylean" target="_blank" class="sm:w-36 text-center bg-gradient-to-r from-gray-700 to-gray-900 hover:from-gray-900 hover:to-gray-700 p-3 rounded-xl font-semibold transition shadow-md">Telegram →</a>
     </div>
-
-    <div class="mt-4 text-center text-xs text-white/50">
-      Нажми Ctrl для дисклеймера | Правый Shift — меню чита
-    </div>
+    <p class="text-xs text-white/40 text-center mt-6">Нажми Ctrl для дисклеймера, ShiftRight для меню</p>
   </div>
 
-  <!-- Дисклеймер -->
-  <div id="disclaimer" class="disclaimer-box">
-    ⚠️ Я никоим образом не причастен к доксингу, сваттингу и другим вредоносным действиям. Всё, что показано здесь — вымышленное и создано исключительно в развлекательных целях.
+  <!-- Меню в стиле Neverlose -->
+  <div id="neverlose-menu" class="neverlose-panel">
+    <h2 class="text-lg font-semibold mb-2">Neverlose Style Menu</h2>
+    <button onclick="toggleTarget()" class="bg-gray-800 hover:bg-gray-700 px-4 py-2 rounded">Target</button>
+    <p class="mt-4 text-xs text-gray-400">Я никоим образом не отношусь к доксингу, сваттингу и прочим незаконным действиям</p>
   </div>
 
-  <!-- Меню чита -->
-  <div id="cheatMenu" class="cheat-menu">
-    <h2>neverlose.cc style menu</h2>
-    <label><input type="checkbox" /> Aimbot</label>
-    <label><input type="checkbox" /> Wallhack</label>
-    <label><input type="checkbox" /> No recoil</label>
-    <label><input type="checkbox" /> ESP box</label>
-    <label><input type="checkbox" /> Hitmarker sound</label>
-  </div>
+  <!-- FontAwesome -->
+  <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
 
-  <!-- Скрипт -->
+  <!-- Логика -->
   <script>
     const card = document.getElementById('tilt-card');
-    const disclaimer = document.getElementById('disclaimer');
-    const cheatMenu = document.getElementById('cheatMenu');
-    let cheatVisible = false;
-
     document.addEventListener('mousemove', (e) => {
       const { clientX: x, clientY: y } = e;
       const { innerWidth: w, innerHeight: h } = window;
@@ -151,34 +108,23 @@
       const rotateX = ((y / h) * -30) + 15;
       card.style.transform = `rotateX(${rotateX}deg) rotateY(${rotateY}deg)`;
     });
-
     document.addEventListener('mouseleave', () => {
       card.style.transform = 'rotateX(0deg) rotateY(0deg)';
     });
 
     document.addEventListener('keydown', (e) => {
       if (e.key === 'Control') {
-        disclaimer.style.display = 'block';
-        setTimeout(() => {
-          disclaimer.style.display = 'none';
-        }, 4000);
-      }
-
-      if (e.code === 'ShiftRight') {
-        cheatVisible = !cheatVisible;
-        cheatMenu.style.display = cheatVisible ? 'block' : 'none';
+        alert("Я никоим образом не отношусь к доксингу, сваттингу и прочим незаконным действиям.");
+      } else if (e.code === 'ShiftRight') {
+        const menu = document.getElementById('neverlose-menu');
+        menu.style.display = menu.style.display === 'none' ? 'block' : 'none';
       }
     });
 
-    // Animated title
-    let titleText = " ✦ Enjoylean ✦ ";
-    let speed = 300;
-    function scrollTitle() {
-      document.title = titleText;
-      titleText = titleText.substring(1) + titleText.charAt(0);
-      setTimeout(scrollTitle, speed);
+    function toggleTarget() {
+      const border = document.getElementById('avatar-border');
+      border.classList.toggle('hidden');
     }
-    scrollTitle();
   </script>
 </body>
 </html>
