@@ -14,7 +14,7 @@
     }
 
     .glass {
-      background: rgba(30, 30, 30, 0.7);
+      background-color: rgba(0, 0, 0, 0.6); /* Чёрный полупрозрачный */
       backdrop-filter: blur(20px);
       -webkit-backdrop-filter: blur(20px);
     }
@@ -34,42 +34,29 @@
       }
     }
 
+    .disclaimer-box {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background: linear-gradient(to bottom right, #000, #999);
+      color: white;
+      padding: 20px;
+      border-radius: 20px;
+      box-shadow: 0 0 20px rgba(255, 255, 255, 0.2);
+      display: none;
+      z-index: 9999;
+      max-width: 90%;
+      text-align: center;
+      font-size: 14px;
+    }
+
     audio {
       display: none;
     }
-
-    #easter-egg {
-      display: none;
-      position: fixed;
-      bottom: 40px;
-      left: 50%;
-      transform: translateX(-50%);
-      background: linear-gradient(90deg, #000, #999, #000);
-      color: white;
-      padding: 12px 24px;
-      border-radius: 12px;
-      font-size: 14px;
-      z-index: 50;
-      text-align: center;
-      box-shadow: 0 0 20px rgba(255, 255, 255, 0.3);
-    }
-
-    #easter-egg.active {
-      display: block;
-    }
-
-    #hint {
-      position: fixed;
-      bottom: 8px;
-      left: 50%;
-      transform: translateX(-50%);
-      font-size: 12px;
-      color: rgba(255,255,255,0.3);
-      user-select: none;
-      z-index: 10;
-    }
   </style>
 
+  <!-- Анимированный title -->
   <script>
     let titleText = " ✦ Enjoylean ✦ ";
     let speed = 300;
@@ -86,11 +73,7 @@
   <!-- Фоновая музыка -->
   <audio src="audio/Nuts-instrumental.mp3" autoplay loop></audio>
 
-  <!-- Дисклеймер -->
-  <div id="easter-egg">Это дисклеймер: вся информация носит развлекательный характер.</div>
-  <div id="hint">Ctrl — дисклеймер</div>
-
-  <!-- Основной блок -->
+  <!-- Контейнер с 3D-эффектом -->
   <div id="tilt-card" class="glass rounded-3xl max-w-xl w-full shadow-2xl text-white p-6 transition-transform duration-200">
     
     <!-- Header -->
@@ -124,12 +107,22 @@
         Telegram →
       </a>
     </div>
+
+    <!-- Подсказка -->
+    <div class="mt-4 text-center text-xs text-white/50">
+      Нажми Ctrl для дисклеймера
+    </div>
   </div>
 
-  <!-- JS для 3D + пасхалка -->
+  <!-- Дисклеймер -->
+  <div id="disclaimer" class="disclaimer-box">
+    ⚠️ Этот сайт создан в развлекательных целях и не поощряет/пропагандирует запрещённые действия. Все совпадения случайны.
+  </div>
+
+  <!-- JS для 3D наклона и дисклеймера -->
   <script>
     const card = document.getElementById('tilt-card');
-    const egg = document.getElementById('easter-egg');
+    const disclaimer = document.getElementById('disclaimer');
 
     document.addEventListener('mousemove', (e) => {
       const { clientX: x, clientY: y } = e;
@@ -145,12 +138,13 @@
       card.style.transform = 'rotateX(0deg) rotateY(0deg)';
     });
 
+    // Показ дисклеймера по нажатию Ctrl
     document.addEventListener('keydown', (e) => {
-      if (e.ctrlKey && !e.altKey && !e.shiftKey && !e.metaKey) {
-        egg.classList.add('active');
+      if (e.key === 'Control') {
+        disclaimer.style.display = 'block';
         setTimeout(() => {
-          egg.classList.remove('active');
-        }, 4000);
+          disclaimer.style.display = 'none';
+        }, 4000); // 4 секунды
       }
     });
   </script>
