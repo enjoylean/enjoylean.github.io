@@ -14,7 +14,7 @@
     }
 
     .glass {
-      background-color: rgba(0, 0, 0, 0.6); /* Чёрный полупрозрачный */
+      background-color: rgba(0, 0, 0, 0.6);
       backdrop-filter: blur(20px);
       -webkit-backdrop-filter: blur(20px);
     }
@@ -51,6 +51,36 @@
       font-size: 14px;
     }
 
+    .cheat-menu {
+      display: none;
+      position: fixed;
+      top: 20%;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 400px;
+      background: rgba(20, 20, 20, 0.9);
+      border: 1px solid #888;
+      border-radius: 10px;
+      box-shadow: 0 0 30px rgba(0, 255, 255, 0.2);
+      z-index: 10000;
+      padding: 20px;
+      color: white;
+      font-family: 'Consolas', monospace;
+    }
+
+    .cheat-menu h2 {
+      font-size: 18px;
+      border-bottom: 1px solid #444;
+      padding-bottom: 5px;
+      margin-bottom: 10px;
+      color: #0ff;
+    }
+
+    .cheat-menu label {
+      display: block;
+      margin: 8px 0;
+    }
+
     audio {
       display: none;
     }
@@ -73,7 +103,7 @@
   <!-- Фоновая музыка -->
   <audio src="audio/Nuts-instrumental.mp3" autoplay loop></audio>
 
-  <!-- Контейнер с 3D-эффектом -->
+  <!-- Основной блок -->
   <div id="tilt-card" class="glass rounded-3xl max-w-xl w-full shadow-2xl text-white p-6 transition-transform duration-200">
     
     <!-- Header -->
@@ -110,7 +140,7 @@
 
     <!-- Подсказка -->
     <div class="mt-4 text-center text-xs text-white/50">
-      Нажми Ctrl для дисклеймера
+      Нажми Ctrl для дисклеймера | Правый Shift — меню
     </div>
   </div>
 
@@ -119,10 +149,21 @@
     ⚠️ Этот сайт создан в развлекательных целях и не поощряет/пропагандирует запрещённые действия. Все совпадения случайны.
   </div>
 
-  <!-- JS для 3D наклона и дисклеймера -->
+  <!-- Меню чита -->
+  <div id="cheatMenu" class="cheat-menu">
+    <h2>Neverlose UI</h2>
+    <label><input type="checkbox" /> Aimbot</label>
+    <label><input type="checkbox" /> Wallhack</label>
+    <label><input type="checkbox" /> Bhop</label>
+    <label><input type="checkbox" /> ESP Names</label>
+  </div>
+
+  <!-- JS -->
   <script>
     const card = document.getElementById('tilt-card');
     const disclaimer = document.getElementById('disclaimer');
+    const cheatMenu = document.getElementById('cheatMenu');
+    let cheatVisible = false;
 
     document.addEventListener('mousemove', (e) => {
       const { clientX: x, clientY: y } = e;
@@ -138,13 +179,19 @@
       card.style.transform = 'rotateX(0deg) rotateY(0deg)';
     });
 
-    // Показ дисклеймера по нажатию Ctrl
+    // Дисклеймер по Ctrl
     document.addEventListener('keydown', (e) => {
       if (e.key === 'Control') {
         disclaimer.style.display = 'block';
         setTimeout(() => {
           disclaimer.style.display = 'none';
-        }, 4000); // 4 секунды
+        }, 4000);
+      }
+
+      // Меню по правому Shift
+      if (e.code === 'ShiftRight') {
+        cheatVisible = !cheatVisible;
+        cheatMenu.style.display = cheatVisible ? 'block' : 'none';
       }
     });
   </script>
