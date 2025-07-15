@@ -13,11 +13,12 @@
       overflow: hidden;
     }
     .terminal {
-      backdrop-filter: blur(4px);
-      background: rgba(0, 0, 0, 0.7);
-      border: 1px solid #22c55e;
+      backdrop-filter: blur(6px);
+      background: rgba(10, 10, 10, 0.85);
+      border: 1px solid #00ff99;
       border-radius: 12px;
-      box-shadow: 0 0 20px #22c55e44;
+      box-shadow: 0 0 30px #00ff9944;
+      transition: all 0.3s ease-in-out;
     }
     canvas {
       display: block;
@@ -46,13 +47,13 @@ RAM: 4.2GiB / 8GiB
 
     <!-- CAVA Window -->
     <div class="terminal p-4">
-      <p><span class="text-blue-400">kayaki@hypr</span>:~$ ./cava</p>
+      <p><span class="text-blue-400">kayaki@hypr</span>:~$ cava</p>
       <canvas id="cavaCanvas" width="400" height="100"></canvas>
     </div>
 
     <!-- Pipes Window -->
     <div class="terminal p-4">
-      <p><span class="text-blue-400">kayaki@hypr</span>:~$ ./pipes.sh</p>
+      <p><span class="text-blue-400">kayaki@hypr</span>:~$ pipes.sh</p>
       <canvas id="pipesCanvas" width="400" height="150"></canvas>
     </div>
 
@@ -68,48 +69,77 @@ RAM: 4.2GiB / 8GiB
   </div>
 
   <script>
-    // Fake cava bars
+    // CAVA bars
     const cava = document.getElementById('cavaCanvas').getContext('2d');
     function drawCava() {
       cava.clearRect(0, 0, 400, 100);
       for (let i = 0; i < 40; i++) {
-        const h = Math.random() * 100;
-        cava.fillStyle = '#22c55e';
-        cava.fillRect(i * 10, 100 - h, 8, h);
+        const base = Math.sin(Date.now() / 200 + i) * 0.5 + 0.5;
+        const height = base * 100;
+        cava.fillStyle = `hsl(${120 + height}, 80%, 50%)`;
+        cava.fillRect(i * 10, 100 - height, 8, height);
       }
     }
-    setInterval(drawCava, 100);
+    setInterval(drawCava, 60);
 
-    // Pipes effect
+    // Realistic Pipes (lines turning at 90° angles)
     const pipes = document.getElementById('pipesCanvas');
     const ctx = pipes.getContext('2d');
     pipes.width = 400;
     pipes.height = 150;
 
-    let lines = Array.from({ length: 5 }, () => ({
-      x: Math.random() * 400,
-      y: Math.random() * 150,
-      dx: Math.random() < 0.5 ? 2 : -2,
-      dy: Math.random() < 0.5 ? 2 : -2
-    }));
+    let segments = [];
+    let pipe = {
+      x: 200,
+      y: 75,
+      dir: 'right',
+      color: '#00ff99'
+    };
+
+    function movePipe() {
+      const length = 10;
+      segments.push({ x: pipe.x, y: pipe.y, dir: pipe.dir });
+      if (Math.random() < 0.2) {
+        pipe.dir = pipe.dir === 'right' || pipe.dir === 'left'
+          ? (Math.random() > 0.5 ? 'up' : 'down')
+          : (Math.random() > 0.5 ? 'right' : 'left');
+      }
+
+      switch (pipe.dir) {
+        case 'right': pipe.x += length; break;
+        case 'left': pipe.x -= length; break;
+        case 'up': pipe.y -= length; break;
+        case 'down': pipe.y += length; break;
+      }
+
+      if (pipe.x < 0) pipe.x = pipes.width;
+      if (pipe.x > pipes.width) pipe.x = 0;
+      if (pipe.y < 0) pipe.y = pipes.height;
+      if (pipe.y > pipes.height) pipe.y = 0;
+
+      if (segments.length > 100) segments.shift();
+    }
 
     function drawPipes() {
-      ctx.fillStyle = 'rgba(0,0,0,0.1)';
-      ctx.fillRect(0, 0, 400, 150);
-      ctx.strokeStyle = '#22c55e';
+      ctx.fillStyle = 'rgba(0, 0, 0, 0.2)';
+      ctx.fillRect(0, 0, pipes.width, pipes.height);
+      ctx.strokeStyle = pipe.color;
       ctx.lineWidth = 2;
-      lines.forEach(line => {
-        ctx.beginPath();
-        ctx.moveTo(line.x, line.y);
-        line.x += line.dx;
-        line.y += line.dy;
-        if (line.x < 0 || line.x > 400) line.dx *= -1;
-        if (line.y < 0 || line.y > 150) line.dy *= -1;
-        ctx.lineTo(line.x, line.y);
-        ctx.stroke();
-      });
+
+      ctx.beginPath();
+      for (let i = 0; i < segments.length - 1; i++) {
+        ctx.moveTo(segments[i].x, segments[i].y);
+        ctx.lineTo(segments[i + 1].x, segments[i + 1].y);
+      }
+      ctx.stroke();
     }
-    setInterval(drawPipes, 60);
+
+    function loop() {
+      movePipe();
+      drawPipes();
+      requestAnimationFrame(loop);
+    }
+    loop();
   </script>
 </body>
 </html>
