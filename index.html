@@ -1,204 +1,115 @@
 <!DOCTYPE html>
-<html lang="ru" class="bg-black">
+<html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Enjoylean</title>
+  <title>kayaki@hypr</title>
   <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js"></script>
   <style>
     body {
-      background: url('https://i.imgur.com/ojDkveH.jpeg') no-repeat center center fixed;
-      background-size: cover;
-      overflow-x: hidden;
-      margin: 0;
-      padding: 0;
+      background-color: #0d0d0d;
+      font-family: 'Fira Code', monospace;
+      overflow: hidden;
     }
-    .glass {
-      background: rgba(0, 0, 0, 0.6);
-      backdrop-filter: blur(20px);
-      -webkit-backdrop-filter: blur(20px);
+    .terminal {
+      backdrop-filter: blur(4px);
+      background: rgba(0, 0, 0, 0.7);
+      border: 1px solid #22c55e;
+      border-radius: 12px;
+      box-shadow: 0 0 20px #22c55e44;
     }
-    .gradient-text {
-      background: linear-gradient(90deg, #fff, #999, #000);
-      background-clip: text;
-      -webkit-background-clip: text;
-      color: transparent;
-      animation: shine 4s linear infinite;
-      background-size: 200% auto;
-    }
-    @keyframes shine {
-      to {
-        background-position: 200% center;
-      }
+    canvas {
+      display: block;
     }
   </style>
 </head>
-<body class="min-h-screen flex items-center justify-center px-4 py-10 relative">
-  <canvas id="star-canvas"></canvas>
+<body class="text-green-400 p-6">
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-4 animate-fade-in">
+    <!-- Fastfetch Window -->
+    <div class="terminal p-4">
+      <p><span class="text-blue-400">kayaki@hypr</span>:~$ fastfetch</p>
+      <pre>
+██╗  ██╗██╗   ██╗██████╗ ██████╗ 
+██║ ██╔╝██║   ██║██╔══██╗██╔══██╗
+█████╔╝ ██║   ██║██████╔╝██████╔╝
+██╔═██╗ ██║   ██║██╔═══╝ ██╔═══╝ 
+██║  ██╗╚██████╔╝██║     ██║     
+╚═╝  ╚═╝ ╚═════╝ ╚═╝     ╚═╝     
 
-  <audio src="audio/Nuts-instrumental.mp3" autoplay loop></audio>
-  <div id="tilt-card" class="glass rounded-3xl max-w-xl w-full shadow-2xl text-white p-6 transition-transform duration-200 relative z-10">
-    <div class="relative">
-      <img src="https://i.imgur.com/NfQotT7.jpeg" class="w-full h-40 object-cover rounded-2xl opacity-30" />
-      <div class="absolute inset-0 flex justify-center -top-10">
-        <img src="https://i.imgur.com/1Fu8VEQ.jpeg" class="w-24 h-24 rounded-full border-4 border-gray-900 shadow-xl" />
-      </div>
+OS: Arch (btw)
+WM: Hyprland
+CPU: Intel Core i5
+RAM: 4.2GiB / 8GiB
+      </pre>
     </div>
-    <div class="mt-14 text-center">
-      <h1 class="text-3xl font-bold gradient-text">Enjoylean</h1>
-      <p class="mt-2 italic text-gray-300">insaneweb co-owner</p>
-      <div class="flex justify-center gap-4 mt-4 text-xl text-blue-400">
-        <a href="https://open.spotify.com/" target="_blank"><i class="fab fa-spotify hover:text-green-400 transition"></i></a>
-        <a href="https://www.youtube.com/" target="_blank"><i class="fab fa-youtube hover:text-red-500 transition"></i></a>
-        <a href="https://store.steampowered.com/" target="_blank"><i class="fab fa-steam hover:text-gray-300 transition"></i></a>
-        <a href="#"><i class="fas fa-gamepad hover:text-indigo-400 transition"></i></a>
-        <a href="#"><i class="fas fa-folder hover:text-teal-400 transition"></i></a>
-      </div>
+
+    <!-- CAVA Window -->
+    <div class="terminal p-4">
+      <p><span class="text-blue-400">kayaki@hypr</span>:~$ ./cava</p>
+      <canvas id="cavaCanvas" width="400" height="100"></canvas>
     </div>
-    <div class="mt-6 flex flex-col sm:flex-row justify-center gap-4">
-      <a href="https://discord.com/invite/enjoylean" target="_blank" class="sm:w-36 text-center bg-gradient-to-r from-gray-900 to-gray-700 hover:from-gray-700 hover:to-gray-900 p-3 rounded-xl font-semibold transition shadow-md">Discord →</a>
-      <a href="https://t.me/enjoylean" target="_blank" class="sm:w-36 text-center bg-gradient-to-r from-gray-700 to-gray-900 hover:from-gray-900 hover:to-gray-700 p-3 rounded-xl font-semibold transition shadow-md">Telegram →</a>
+
+    <!-- Pipes Window -->
+    <div class="terminal p-4">
+      <p><span class="text-blue-400">kayaki@hypr</span>:~$ ./pipes.sh</p>
+      <canvas id="pipesCanvas" width="400" height="150"></canvas>
     </div>
-    <p class="text-xs text-white/40 text-center mt-6">Нажми Ctrl для дисклеймера</p>
+
+    <!-- Links Window -->
+    <div class="terminal p-4">
+      <p><span class="text-blue-400">kayaki@hypr</span>:~$ links</p>
+      <ul class="list-disc pl-5">
+        <li><a href="https://t.me/kayaki" class="hover:underline">Telegram</a></li>
+        <li><a href="https://github.com/kayaki" class="hover:underline">GitHub</a></li>
+        <li><a href="https://discord.gg/123abc" class="hover:underline">Discord</a></li>
+      </ul>
+    </div>
   </div>
 
-  <!-- FontAwesome -->
-  <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
-
   <script>
-    // Настройка canvas
-    const canvas = document.getElementById('star-canvas');
-    const ctx = canvas.getContext('2d');
-    let width, height;
-
-    function resize() {
-      width = window.innerWidth;
-      height = window.innerHeight;
-      canvas.width = width;
-      canvas.height = height;
-      canvas.style.position = 'fixed';
-      canvas.style.top = '0';
-      canvas.style.left = '0';
-      canvas.style.width = '100vw';
-      canvas.style.height = '100vh';
-      canvas.style.pointerEvents = 'none';
-      canvas.style.zIndex = '0';
-    }
-    window.addEventListener('resize', resize);
-    resize();
-
-    // Рисуем маленькую ч/б звёздочку с лучиками (крест и наклонный крест)
-    function drawStarShape(x, y, size) {
-      ctx.strokeStyle = 'white';
-      ctx.lineWidth = 1;
-      ctx.beginPath();
-      // Вертикаль и горизонталь
-      ctx.moveTo(x - size, y);
-      ctx.lineTo(x + size, y);
-      ctx.moveTo(x, y - size);
-      ctx.lineTo(x, y + size);
-      // Диагонали
-      ctx.moveTo(x - size * 0.7, y - size * 0.7);
-      ctx.lineTo(x + size * 0.7, y + size * 0.7);
-      ctx.moveTo(x - size * 0.7, y + size * 0.7);
-      ctx.lineTo(x + size * 0.7, y - size * 0.7);
-      ctx.stroke();
-    }
-
-    class Star {
-      constructor(x, y, radius, color, isPremium) {
-        this.x = x;
-        this.y = y;
-        this.radius = radius;
-        this.color = color;
-        this.isPremium = isPremium;
-        this.speedX = (Math.random() - 0.5) * 0.15;
-        this.speedY = (Math.random() - 0.5) * 0.15;
-        this.alpha = Math.random() * 0.8 + 0.2;
-        this.alphaSpeed = (Math.random() * 0.02) + 0.005;
-      }
-      update() {
-        this.x += this.speedX;
-        this.y += this.speedY;
-
-        if (this.x < 0) this.x = width;
-        if (this.x > width) this.x = 0;
-        if (this.y < 0) this.y = height;
-        if (this.y > height) this.y = 0;
-
-        this.alpha += this.alphaSpeed;
-        if (this.alpha >= 1 || this.alpha <= 0.3) {
-          this.alphaSpeed *= -1;
-        }
-      }
-      draw() {
-        ctx.save();
-        ctx.globalAlpha = this.alpha;
-        if (this.isPremium) {
-          // Цветные звёзды (круг + крест)
-          ctx.strokeStyle = this.color;
-          ctx.fillStyle = this.color;
-          ctx.lineWidth = 1;
-          const r = this.radius;
-          ctx.beginPath();
-          ctx.arc(this.x, this.y, r, 0, Math.PI * 2);
-          ctx.fill();
-          ctx.beginPath();
-          ctx.moveTo(this.x - r * 2, this.y);
-          ctx.lineTo(this.x + r * 2, this.y);
-          ctx.moveTo(this.x, this.y - r * 2);
-          ctx.lineTo(this.x, this.y + r * 2);
-          ctx.stroke();
-        } else {
-          // Чёрно-белые звёзды с лучиками
-          drawStarShape(this.x, this.y, this.radius + 1);
-        }
-        ctx.restore();
+    // Fake cava bars
+    const cava = document.getElementById('cavaCanvas').getContext('2d');
+    function drawCava() {
+      cava.clearRect(0, 0, 400, 100);
+      for (let i = 0; i < 40; i++) {
+        const h = Math.random() * 100;
+        cava.fillStyle = '#22c55e';
+        cava.fillRect(i * 10, 100 - h, 8, h);
       }
     }
+    setInterval(drawCava, 100);
 
-    const stars = [];
-    const premiumColors = ['#25F4EE', '#2AABEE', '#FFD500', '#FF3A44', '#6A5ACD'];
-    const totalStars = 120;
+    // Pipes effect
+    const pipes = document.getElementById('pipesCanvas');
+    const ctx = pipes.getContext('2d');
+    pipes.width = 400;
+    pipes.height = 150;
 
-    for (let i = 0; i < totalStars; i++) {
-      const x = Math.random() * width;
-      const y = Math.random() * height;
-      const radius = Math.random() * 1.2 + 0.6; // размер звезды
-      const isPremium = Math.random() < 0.3; // 30% премиум цветных
-      const color = isPremium ? premiumColors[Math.floor(Math.random() * premiumColors.length)] : '#fff';
-      stars.push(new Star(x, y, radius, color, isPremium));
-    }
+    let lines = Array.from({ length: 5 }, () => ({
+      x: Math.random() * 400,
+      y: Math.random() * 150,
+      dx: Math.random() < 0.5 ? 2 : -2,
+      dy: Math.random() < 0.5 ? 2 : -2
+    }));
 
-    function animate() {
-      ctx.clearRect(0, 0, width, height);
-      stars.forEach(star => {
-        star.update();
-        star.draw();
+    function drawPipes() {
+      ctx.fillStyle = 'rgba(0,0,0,0.1)';
+      ctx.fillRect(0, 0, 400, 150);
+      ctx.strokeStyle = '#22c55e';
+      ctx.lineWidth = 2;
+      lines.forEach(line => {
+        ctx.beginPath();
+        ctx.moveTo(line.x, line.y);
+        line.x += line.dx;
+        line.y += line.dy;
+        if (line.x < 0 || line.x > 400) line.dx *= -1;
+        if (line.y < 0 || line.y > 150) line.dy *= -1;
+        ctx.lineTo(line.x, line.y);
+        ctx.stroke();
       });
-      requestAnimationFrame(animate);
     }
-    animate();
-
-    // Наклон карточки при движении мыши
-    const card = document.getElementById('tilt-card');
-    document.addEventListener('mousemove', (e) => {
-      const { clientX: x, clientY: y } = e;
-      const { innerWidth: w, innerHeight: h } = window;
-      const rotateY = ((x / w) * 30) - 15;
-      const rotateX = ((y / h) * -30) + 15;
-      card.style.transform = `rotateX(${rotateX}deg) rotateY(${rotateY}deg)`;
-    });
-    document.addEventListener('mouseleave', () => {
-      card.style.transform = 'rotateX(0deg) rotateY(0deg)';
-    });
-
-    // Дисклеймер по Ctrl
-    document.addEventListener('keydown', (e) => {
-      if (e.key === 'Control') {
-        alert("Я никоим образом не отношусь к доксингу, сваттингу и прочим незаконным действиям.");
-      }
-    });
+    setInterval(drawPipes, 60);
   </script>
 </body>
 </html>
