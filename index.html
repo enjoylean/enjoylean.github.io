@@ -15,17 +15,20 @@
     .terminal {
       backdrop-filter: blur(6px);
       background: rgba(10, 10, 10, 0.85);
-      border: 1px solid #00ff99;
+      border: 1px solid #00ccff;
       border-radius: 12px;
-      box-shadow: 0 0 30px #00ff9944;
+      box-shadow: 0 0 30px #00ccff44;
       transition: all 0.3s ease-in-out;
     }
     canvas {
       display: block;
     }
+    a {
+      color: #00ccff;
+    }
   </style>
 </head>
-<body class="text-green-400 p-6">
+<body class="text-cyan-300 p-6">
   <div class="grid grid-cols-1 md:grid-cols-2 gap-4 animate-fade-in">
     <!-- Fastfetch Window -->
     <div class="terminal p-4">
@@ -64,6 +67,7 @@ RAM: 4.2GiB / 8GiB
         <li><a href="https://t.me/kayaki" class="hover:underline">Telegram</a></li>
         <li><a href="https://github.com/kayaki" class="hover:underline">GitHub</a></li>
         <li><a href="https://discord.gg/123abc" class="hover:underline">Discord</a></li>
+        <li><a href="#" onclick="openContact()" class="hover:underline">Связаться со мной</a></li>
       </ul>
     </div>
   </div>
@@ -76,7 +80,7 @@ RAM: 4.2GiB / 8GiB
       for (let i = 0; i < 40; i++) {
         const base = Math.sin(Date.now() / 200 + i) * 0.5 + 0.5;
         const height = base * 100;
-        cava.fillStyle = `hsl(${120 + height}, 80%, 50%)`;
+        cava.fillStyle = `hsl(${190 + height}, 100%, 60%)`;
         cava.fillRect(i * 10, 100 - height, 8, height);
       }
     }
@@ -93,7 +97,7 @@ RAM: 4.2GiB / 8GiB
       x: 200,
       y: 75,
       dir: 'right',
-      color: '#00ff99'
+      color: '#00ccff'
     };
 
     function movePipe() {
@@ -140,6 +144,20 @@ RAM: 4.2GiB / 8GiB
       requestAnimationFrame(loop);
     }
     loop();
+
+    // Contact form (to Telegram Bot API)
+    function openContact() {
+      const msg = prompt("Что вы хотите мне отправить?");
+      if (!msg) return;
+      fetch("https://api.telegram.org/bot<YOUR_BOT_TOKEN>/sendMessage", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          chat_id: "<YOUR_CHAT_ID>",
+          text: `[bio.hypr.sh] 📩 Новое сообщение: \n${msg}`
+        })
+      }).then(r => alert("✅ Отправлено!"));
+    }
   </script>
 </body>
 </html>
