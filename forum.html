@@ -12,13 +12,7 @@
       color: #e5e7eb;
       font-family: Inter, Arial, sans-serif;
       min-height: 100vh;
-      display: flex;
     }
-
-    /* LAYOUT: main + sidebar */
-    .container { display: flex; width: 100%; min-height: 100vh; }
-    .main { flex: 1; display: flex; flex-direction: column; }
-    .sidebar { width: 300px; background: rgba(10, 4, 21, 0.4); border-left: 1px solid rgba(157, 78, 221, 0.2); padding: 20px; overflow-y: auto; }
 
     /* TOP NAV */
     .navbar {
@@ -43,20 +37,61 @@
     .navbar .user-info { margin-left: auto; font-size: 13px; }
     .navbar button { color: #ef4444; }
 
-    /* CONTENT */
-    .content { flex: 1; padding: 20px 24px; overflow-y: auto; }
+    /* CONTAINER */
+    .container { max-width: 1200px; margin: 20px auto; padding: 0 20px; }
 
     /* TABS */
     .tabs { display: flex; gap: 12px; margin-bottom: 20px; }
     .tab-btn { padding: 8px 16px; border-radius: 6px; border: none; background: transparent; color: #cbd5e1; cursor: pointer; font-size: 14px; font-weight: 600; transition: all 0.2s; }
     .tab-btn.active { background: linear-gradient(90deg, #8b63ff, #5b21b6); color: #fff; }
 
-    /* FORUM SECTION */
-    .forum-section {
+    /* FORUM CATEGORY */
+    .forum-category {
       background: rgba(15, 23, 42, 0.6);
-      border-radius: 12px;
+      margin-bottom: 20px;
+      border-radius: 8px;
+      overflow: hidden;
+      border: 1px solid rgba(157, 78, 221, 0.1);
+      backdrop-filter: blur(4px);
+    }
+
+    .category-header {
+      background: linear-gradient(90deg, #8b63ff, #5b21b6);
+      color: #fff;
+      padding: 12px 16px;
+      font-size: 14px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    .topic-list { display: flex; flex-direction: column; }
+
+    .topic {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 12px 16px;
+      border-top: 1px solid rgba(157, 78, 221, 0.1);
+      transition: background 0.2s;
+      cursor: pointer;
+    }
+    .topic:hover { background: rgba(157, 78, 221, 0.08); }
+
+    .topic-left { flex: 1; }
+    .topic-title { color: #93c5fd; font-weight: 600; margin-bottom: 4px; }
+    .topic-meta { color: #94a3b8; font-size: 12px; }
+
+    .topic-right { text-align: right; font-size: 12px; color: #cbd5e1; }
+    .topic-replies { color: #93c5fd; font-weight: 600; }
+    .topic-date { color: #64748b; margin-top: 4px; }
+
+    /* CREATE POST FORM */
+    .create-post-section {
+      background: rgba(15, 23, 42, 0.6);
+      border-radius: 8px;
       padding: 16px;
-      margin-bottom: 16px;
+      margin-bottom: 20px;
       border: 1px solid rgba(157, 78, 221, 0.1);
       backdrop-filter: blur(4px);
     }
@@ -68,49 +103,90 @@
       text-transform: uppercase;
       letter-spacing: 1px;
       margin-bottom: 12px;
-      padding-bottom: 12px;
-      border-bottom: 1px solid rgba(157, 78, 221, 0.2);
     }
 
-    .topic {
-      padding: 14px;
+    input, textarea {
+      width: 100%;
       margin-bottom: 10px;
-      background: rgba(10, 4, 21, 0.4);
-      border-radius: 8px;
+      padding: 10px 12px;
+      border-radius: 6px;
+      background: rgba(2, 6, 23, 0.55);
+      color: #fff;
+      border: 1px solid rgba(115, 125, 150, 0.12);
+      font-family: Inter, Arial, sans-serif;
+    }
+    input:focus, textarea:focus { outline: none; border-color: rgba(157, 78, 221, 0.8); }
+    textarea { min-height: 80px; resize: vertical; }
+
+    button { 
+      padding: 10px 16px;
+      background: linear-gradient(90deg, #8b63ff, #5b21b6);
+      color: #fff;
+      border: none;
+      border-radius: 6px;
       cursor: pointer;
-      transition: background 0.2s;
-      border-left: 3px solid rgba(157, 78, 221, 0.4);
+      font-weight: 600;
+      font-size: 14px;
+      transition: box-shadow 0.2s;
     }
-    .topic:hover { background: rgba(157, 78, 221, 0.08); border-left-color: rgba(157, 78, 221, 0.8); }
+    button:hover { box-shadow: 0 6px 16px rgba(92, 33, 182, 0.3); }
 
-    /* CHAT SECTION */
-    .chat-container {
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
-      margin-top: 20px;
-    }
+    /* THREAD VIEW */
+    .thread-view { display: none; }
+    .thread-view.active { display: block; }
 
-    .chat-box {
+    .thread-header {
       background: rgba(15, 23, 42, 0.6);
-      border-radius: 12px;
+      border-radius: 8px;
+      padding: 16px;
+      margin-bottom: 16px;
+      border: 1px solid rgba(157, 78, 221, 0.1);
+    }
+
+    .thread-title { font-size: 18px; font-weight: 700; margin-bottom: 8px; }
+    .thread-meta { font-size: 12px; color: #94a3b8; margin-bottom: 12px; }
+    .thread-back { color: #93c5fd; cursor: pointer; text-decoration: underline; font-size: 12px; }
+
+    .replies-container {
+      background: rgba(15, 23, 42, 0.6);
+      border-radius: 8px;
       padding: 16px;
       border: 1px solid rgba(157, 78, 221, 0.1);
-      backdrop-filter: blur(4px);
-      height: 450px;
-      display: flex;
-      flex-direction: column;
+      margin-bottom: 16px;
     }
 
-    .chat-title {
-      font-size: 14px;
-      font-weight: 700;
-      color: #cbd5e1;
-      text-transform: uppercase;
-      letter-spacing: 1px;
-      margin-bottom: 12px;
-      padding-bottom: 12px;
-      border-bottom: 1px solid rgba(157, 78, 221, 0.2);
+    .reply-item {
+      background: rgba(10, 4, 21, 0.4);
+      padding: 12px;
+      margin-bottom: 10px;
+      border-radius: 6px;
+      border-left: 3px solid rgba(157, 78, 221, 0.5);
+    }
+
+    .reply-author { color: #93c5fd; font-weight: 600; font-size: 12px; margin-bottom: 4px; }
+    .reply-date { color: #64748b; font-size: 11px; margin-bottom: 6px; }
+    .reply-text { color: #cbd5e1; font-size: 13px; }
+
+    .reply-form {
+      background: rgba(15, 23, 42, 0.6);
+      border-radius: 8px;
+      padding: 16px;
+      border: 1px solid rgba(157, 78, 221, 0.1);
+    }
+
+    .reply-form-title { font-size: 12px; font-weight: 700; text-transform: uppercase; margin-bottom: 12px; }
+    .reply-input-group { display: flex; gap: 8px; }
+    .reply-input-group input { flex: 1; }
+
+    /* CHAT */
+    .chat-box {
+      background: rgba(15, 23, 42, 0.6);
+      border-radius: 8px;
+      padding: 16px;
+      border: 1px solid rgba(157, 78, 221, 0.1);
+      height: 500px;
+      display: flex;
+      flex-direction: column;
     }
 
     .chat-messages {
@@ -123,154 +199,89 @@
     }
 
     .chat-message {
-      background: rgba(10, 4, 21, 0.3);
+      background: rgba(10, 4, 21, 0.4);
       padding: 8px 12px;
       border-radius: 6px;
-      font-size: 13px;
       border-left: 2px solid rgba(157, 78, 221, 0.5);
-    }
-
-    .chat-message-author {
-      color: #93c5fd;
-      font-weight: 600;
       font-size: 12px;
     }
 
+    .chat-message-author { color: #93c5fd; font-weight: 600; font-size: 11px; }
     .chat-message-text { color: #cbd5e1; margin-top: 2px; }
 
-    .chat-input-group {
-      display: flex;
-      gap: 8px;
-    }
-
-    .chat-input {
-      flex: 1;
-      background: rgba(2, 6, 23, 0.55);
-      border: 1px solid rgba(115, 125, 150, 0.12);
-      color: #fff;
-      padding: 8px 12px;
-      border-radius: 6px;
-      font-size: 13px;
-    }
-
-    .chat-input:focus { outline: none; border-color: rgba(157, 78, 221, 0.8); }
-
-    .chat-send-btn {
-      background: linear-gradient(90deg, #8b63ff, #5b21b6);
-      color: #fff;
-      border: none;
-      padding: 8px 16px;
-      border-radius: 6px;
-      cursor: pointer;
-      font-weight: 600;
-      font-size: 13px;
-      transition: box-shadow 0.2s;
-    }
-
-    .chat-send-btn:hover { box-shadow: 0 6px 16px rgba(92, 33, 182, 0.3); }
-
-    /* SIDEBAR */
-    .sidebar-block {
-      background: rgba(15, 23, 42, 0.5);
-      border-radius: 8px;
-      padding: 12px;
-      margin-bottom: 12px;
-      border: 1px solid rgba(157, 78, 221, 0.1);
-    }
-
-    .sidebar-title {
-      font-size: 12px;
-      font-weight: 700;
-      color: #93c5fd;
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-      margin-bottom: 8px;
-    }
-
-    .sidebar-text { font-size: 13px; color: #cbd5e1; line-height: 1.4; }
-    .sidebar-text a { color: #93c5fd; display: block; margin-top: 6px; }
+    .chat-input-group { display: flex; gap: 8px; }
+    .chat-input-group input { flex: 1; }
 
     @media (max-width: 768px) {
-      .container { flex-direction: column; }
-      .sidebar { width: 100%; border-left: none; border-top: 1px solid rgba(157, 78, 221, 0.2); }
+      .topic { flex-direction: column; align-items: flex-start; }
+      .topic-right { margin-top: 8px; }
     }
   </style>
 </head>
 <body>
 
+<!-- NAVBAR -->
+<div class="navbar">
+  <a href="index.html">Index</a>
+  <a href="#">Search</a>
+  <a href="profile.html">Profile</a>
+  <a href="#">PM</a>
+  <div class="user-info">
+    Logged in as: <span id="currentUser">User</span>
+  </div>
+  <button onclick="logout()">Logout</button>
+</div>
+
 <div class="container">
-  <div class="main">
-    <!-- NAVBAR -->
-    <div class="navbar">
-      <a href="index.html">Index</a>
-      <a href="#">Search</a>
-      <a href="profile.html">Profile</a>
-      <a href="#">PM</a>
-      <a href="#">Premium</a>
-      <div class="user-info">
-        Logged in as: <span id="currentUser">User</span>
-      </div>
-      <button onclick="logout()">Logout</button>
+  <div class="tabs">
+    <button class="tab-btn active" onclick="switchTab('forum')">Forum</button>
+    <button class="tab-btn" onclick="switchTab('chat')">Chat</button>
+  </div>
+
+  <!-- FORUM TAB -->
+  <div id="forum-tab" class="tab-content">
+    <!-- CREATE POST -->
+    <div class="create-post-section">
+      <div class="section-title">Create New Topic</div>
+      <input id="postTitle" placeholder="Topic title...">
+      <textarea id="postContent" placeholder="Write your message..."></textarea>
+      <button onclick="publishPost()">Create Topic</button>
     </div>
 
-    <!-- CONTENT -->
-    <div class="content">
-      <div class="tabs">
-        <button class="tab-btn active" onclick="switchTab('forum', this)">Forum</button>
-        <button class="tab-btn" onclick="switchTab('chat', this)">Chat</button>
-      </div>
+    <!-- FORUM CATEGORIES -->
+    <div class="forum-category">
+      <div class="category-header">General Discussion</div>
+      <div class="topic-list" id="topicsList"></div>
+    </div>
+  </div>
 
-      <!-- FORUM TAB -->
-      <div id="forum-tab" class="tab-content">
-        <!-- CREATE POST SECTION -->
-        <div class="forum-section">
-          <div class="section-title">Create Post</div>
-          <input id="postTitle" placeholder="Post title..." style="width:100%; margin-top:10px; padding:10px 12px; border-radius:6px; background:rgba(2,6,23,0.55); color:#fff; border:1px solid rgba(115,125,150,0.12);">
-          <textarea id="postContent" placeholder="Write your message..." style="width:100%; margin-top:10px; padding:10px 12px; border-radius:6px; background:rgba(2,6,23,0.55); color:#fff; border:1px solid rgba(115,125,150,0.12); min-height:80px; resize:vertical;"></textarea>
-          <button onclick="publishPost()" style="width:100%; margin-top:10px; padding:10px 12px; border-radius:6px; background:linear-gradient(90deg,#8b63ff,#5b21b6); color:#fff; border:none; cursor:pointer; font-weight:600;">Publish</button>
-        </div>
+  <!-- THREAD VIEW -->
+  <div id="thread-view" class="thread-view">
+    <div class="thread-header">
+      <div class="thread-back" onclick="backToForum()">← Back to Forum</div>
+      <div class="thread-title" id="threadTitle"></div>
+      <div class="thread-meta" id="threadMeta"></div>
+    </div>
 
-        <!-- POSTS SECTION -->
-        <div class="forum-section">
-          <div class="section-title">Recent Posts</div>
-          <div id="generalTopics"></div>
-        </div>
-      </div>
+    <div class="replies-container" id="repliesContainer"></div>
 
-      <!-- CHAT TAB -->
-      <div id="chat-tab" class="tab-content" style="display: none;">
-        <div class="chat-box">
-          <div class="chat-title">Live Chat</div>
-          <div class="chat-messages" id="chatMessages"></div>
-          <div class="chat-input-group">
-            <input class="chat-input" id="chatInput" placeholder="Type a message...">
-            <button class="chat-send-btn" onclick="sendMessage()">Send</button>
-          </div>
-        </div>
+    <div class="reply-form">
+      <div class="reply-form-title">Write a Reply</div>
+      <div class="reply-input-group">
+        <input id="replyInput" placeholder="Write your reply...">
+        <button onclick="publishReply()">Post Reply</button>
       </div>
     </div>
   </div>
 
-  <!-- SIDEBAR -->
-  <div class="sidebar">
-    <div class="sidebar-block">
-      <div class="sidebar-title">📊 Stats</div>
-      <div class="sidebar-text">
-        <div>Users online: <span id="onlineCount">1</span></div>
-        <div style="margin-top: 8px; font-size: 12px; color: #94a3b8;">Last activity: just now</div>
-      </div>
-    </div>
-
-    <div class="sidebar-block">
-      <div class="sidebar-title">📌 Rules</div>
-      <div class="sidebar-text">Be respectful, no spam, follow guidelines.</div>
-    </div>
-
-    <div class="sidebar-block">
-      <div class="sidebar-title">🎯 Quick Links</div>
-      <div class="sidebar-text">
-        <a href="profile.html">→ My Profile</a>
-        <a href="admin.html">→ Admin</a>
+  <!-- CHAT TAB -->
+  <div id="chat-tab" class="tab-content" style="display: none;">
+    <div class="chat-box">
+      <div class="section-title" style="margin-bottom: 12px;">💬 Live Chat</div>
+      <div class="chat-messages" id="chatMessages"></div>
+      <div class="chat-input-group">
+        <input id="chatInput" placeholder="Type a message...">
+        <button onclick="sendMessage()">Send</button>
       </div>
     </div>
   </div>
@@ -295,6 +306,7 @@ const auth = getAuth(app);
 const db = getFirestore(app);
 
 let currentUser = null;
+let currentThreadId = null;
 
 // CHECK AUTH
 onAuthStateChanged(auth, (user) => {
@@ -312,50 +324,42 @@ onAuthStateChanged(auth, (user) => {
 });
 
 // ===== TAB SWITCH =====
-window.switchTab = function(tab, btn) {
+window.switchTab = function(tab) {
   document.querySelectorAll(".tab-content").forEach(el => el.style.display = "none");
-  document.querySelectorAll(".tab-btn").forEach(el => el.classList.remove("active"));
+  document.querySelectorAll(".thread-view").forEach(el => el.classList.remove("active"));
   document.getElementById(tab + "-tab").style.display = "block";
-  if (btn) btn.classList.add("active");
+  
+  document.querySelectorAll(".tab-btn").forEach(el => el.classList.remove("active"));
+  event.target.classList.add("active");
 };
 
 // ===== LOAD FORUM =====
 async function loadForum() {
   try {
-    const postsSnap = await getDocs(query(collection(db, "posts"), orderBy("createdAt", "desc"), limit(20)));
-    const generalTopics = document.getElementById("generalTopics");
-    generalTopics.innerHTML = "";
+    const postsSnap = await getDocs(query(collection(db, "posts"), orderBy("createdAt", "desc"), limit(50)));
+    const topicsList = document.getElementById("topicsList");
+    topicsList.innerHTML = "";
 
     if (postsSnap.empty) {
-      generalTopics.innerHTML = '<div style="color: #94a3b8; padding: 12px;">No posts yet. Be the first to post!</div>';
+      topicsList.innerHTML = '<div style="color: #94a3b8; padding: 12px;">No topics yet. Create one!</div>';
     } else {
       for (const postDoc of postsSnap.docs) {
         const post = postDoc.data();
         const date = post.createdAt ? new Date(post.createdAt.toDate()).toLocaleDateString() : "Unknown";
         const username = post.username || post.author || "Anonymous";
         
-        // Get reply count
         const repliesSnap = await getDocs(collection(db, `posts/${postDoc.id}/replies`));
         const replyCount = repliesSnap.size;
 
-        generalTopics.innerHTML += `
-          <div class="topic" id="post-${postDoc.id}">
-            <div>
-              <div class="topic-title">${post.title || "Untitled"}</div>
-              <div class="topic-meta">by ${username} • ${date}</div>
-              <div style="color: #cbd5e1; margin-top: 6px; font-size: 13px;">${post.content || ""}</div>
-              <div style="margin-top: 10px; display: flex; gap: 12px;">
-                <button onclick="toggleReplies('${postDoc.id}')" style="padding: 6px 12px; background: rgba(157, 78, 221, 0.3); color: #93c5fd; border: 1px solid rgba(157, 78, 221, 0.5); border-radius: 4px; cursor: pointer; font-size: 12px;">
-                  💬 Replies (${replyCount})
-                </button>
-              </div>
+        topicsList.innerHTML += `
+          <div class="topic" onclick="viewThread('${postDoc.id}', '${post.title}', '${username}', '${date}')">
+            <div class="topic-left">
+              <div class="topic-title">${post.title}</div>
+              <div class="topic-meta">Started by ${username}</div>
             </div>
-            <div id="replies-${postDoc.id}" style="display: none; margin-top: 12px; padding-top: 12px; border-top: 1px solid rgba(157, 78, 221, 0.2);">
-              <div id="replies-list-${postDoc.id}"></div>
-              <div style="margin-top: 10px; display: flex; gap: 8px;">
-                <input id="reply-input-${postDoc.id}" placeholder="Write a reply..." style="flex: 1; padding: 8px 12px; background: rgba(2, 6, 23, 0.55); color: #fff; border: 1px solid rgba(115, 125, 150, 0.12); border-radius: 4px; font-size: 12px;">
-                <button onclick="publishReply('${postDoc.id}')" style="padding: 8px 16px; background: linear-gradient(90deg, #8b63ff, #5b21b6); color: #fff; border: none; border-radius: 4px; cursor: pointer; font-weight: 600; font-size: 12px;">Post</button>
-              </div>
+            <div class="topic-right">
+              <div class="topic-replies">${replyCount} replies</div>
+              <div class="topic-date">${date}</div>
             </div>
           </div>
         `;
@@ -366,33 +370,43 @@ async function loadForum() {
   }
 }
 
-// ===== TOGGLE REPLIES =====
-window.toggleReplies = async function(postId) {
-  const repliesDiv = document.getElementById(`replies-${postId}`);
-  if (repliesDiv.style.display === "none") {
-    repliesDiv.style.display = "block";
-    await loadReplies(postId);
-  } else {
-    repliesDiv.style.display = "none";
-  }
+// ===== VIEW THREAD =====
+window.viewThread = async function(postId, title, author, date) {
+  currentThreadId = postId;
+  document.getElementById("threadTitle").textContent = title;
+  document.getElementById("threadMeta").textContent = `by ${author} • ${date}`;
+  
+  document.getElementById("forum-tab").style.display = "none";
+  document.getElementById("thread-view").classList.add("active");
+  
+  await loadThreadReplies(postId);
 };
 
-// ===== LOAD REPLIES =====
-async function loadReplies(postId) {
+// ===== BACK TO FORUM =====
+window.backToForum = function() {
+  currentThreadId = null;
+  document.getElementById("forum-tab").style.display = "block";
+  document.getElementById("thread-view").classList.remove("active");
+  document.getElementById("replyInput").value = "";
+};
+
+// ===== LOAD THREAD REPLIES =====
+async function loadThreadReplies(postId) {
   try {
     const repliesSnap = await getDocs(query(collection(db, `posts/${postId}/replies`), orderBy("createdAt", "asc")));
-    const repliesList = document.getElementById(`replies-list-${postId}`);
-    repliesList.innerHTML = "";
+    const repliesContainer = document.getElementById("repliesContainer");
+    repliesContainer.innerHTML = "";
 
     repliesSnap.forEach(replyDoc => {
       const reply = replyDoc.data();
       const username = reply.username || reply.author || "Anonymous";
-      const date = reply.createdAt ? new Date(reply.createdAt.toDate()).toLocaleTimeString() : "Unknown";
+      const date = reply.createdAt ? new Date(reply.createdAt.toDate()).toLocaleString() : "Unknown";
       
-      repliesList.innerHTML += `
-        <div style="background: rgba(10, 4, 21, 0.5); padding: 8px 12px; margin-bottom: 8px; border-radius: 4px; border-left: 2px solid rgba(157, 78, 221, 0.4);">
-          <div style="color: #93c5fd; font-weight: 600; font-size: 11px;">${username} • ${date}</div>
-          <div style="color: #cbd5e1; margin-top: 4px; font-size: 12px;">${reply.text}</div>
+      repliesContainer.innerHTML += `
+        <div class="reply-item">
+          <div class="reply-author">${username}</div>
+          <div class="reply-date">${date}</div>
+          <div class="reply-text">${reply.text}</div>
         </div>
       `;
     });
@@ -402,8 +416,8 @@ async function loadReplies(postId) {
 }
 
 // ===== PUBLISH REPLY =====
-window.publishReply = async function(postId) {
-  const input = document.getElementById(`reply-input-${postId}`);
+window.publishReply = async function() {
+  const input = document.getElementById("replyInput");
   const text = input.value.trim();
 
   if (!text) {
@@ -411,19 +425,20 @@ window.publishReply = async function(postId) {
     return;
   }
 
+  if (!currentThreadId) return;
+
   try {
-    // Get current user's username
     const userDoc = await getDoc(doc(db, "users", currentUser.uid));
     const username = userDoc.exists() ? userDoc.data().username : currentUser.email.split("@")[0];
 
-    await addDoc(collection(db, `posts/${postId}/replies`), {
+    await addDoc(collection(db, `posts/${currentThreadId}/replies`), {
       text,
       author: currentUser.email.split("@")[0],
       username,
       createdAt: serverTimestamp()
     });
     input.value = "";
-    await loadReplies(postId);
+    await loadThreadReplies(currentThreadId);
   } catch (e) {
     console.error("Publish reply error:", e);
     alert("Failed to publish reply");
@@ -441,7 +456,6 @@ window.publishPost = async () => {
   }
 
   try {
-    // Get current user's username
     const userDoc = await getDoc(doc(db, "users", currentUser.uid));
     const username = userDoc.exists() ? userDoc.data().username : currentUser.email.split("@")[0];
 
