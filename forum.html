@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <title>Avidware Forum</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <style>
+    body { background:#0f172a; color:#e5e7eb; font-family:Arial; margin:0; padding:20px }
+    .wrap { max-width:800px; margin:auto }
+    .post { background:#020617; padding:16px; border-radius:12px; margin-bottom:12px }
+    input, textarea, button {
+      width:100%; margin-top:8px; padding:10px;
+      border-radius:8px; border:none
+    }
+    input, textarea { background:#020617; color:#fff; border:1px solid #334155 }
+    button { background:#2563eb; color:#fff; cursor:pointer }
+    .top { display:flex; justify-content:space-between; align-items:center }
+    a { color:#93c5fd; text-decoration:none }
+  </style>
+</head>
+<body>
+<div class="wrap">
+  <div class="top">
+    <h2>Forum</h2>
+    <a id="profileLink"></a>
+  </div>
+
+  <div class="post">
+    <input id="title" placeholder="Заголовок" />
+    <textarea id="content" rows="4" placeholder="Текст поста"></textarea>
+    <button onclick="createPost()">Создать пост</button>
+  </div>
+
+  <div id="posts"></div>
+</div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+import { getFirestore, collection, addDoc, query, orderBy, getDocs } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyCIXJyovY1P0fvoEexAApCesqiTphA_mTk",
+  authDomain: "avidware.firebaseapp.com",
+  projectId: "avidware",
+  storageBucket: "avidware.firebasestorage.app",
+  messagingSenderId: "1003506881786",
+  appId: "1:1003506881786:web:8c64d2aaf477fdf009e543"
+};
+
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getFirestore(app);
+
+let currentUser = null;
+let username = null;
+
+onAuthStateChanged(auth, async user => {
+  if (!user) {
+    location.href = "login.html";
+    return;
+  }
+
+  currentUser = user;
+
+  const snap = await getDocs(collection(db, "users"));
+  snap.forEach(d => {
+    if (d.id === user.uid) username = d.data().username;
+  });
+
+  document.getElementById("profileLink").innerText = username;
+  document.getElementById("profileLink").href = `profile.html?u=${username}`;
+
+  loadPosts();
+});
+
+window.createPost = async () => {
+  if (!currentUser) return;
+
+  const t = title.value.trim();
+  const c = content.value.trim();
+  if (!t || !c) return;
+
+  await addDoc(collection(db, "posts"), {
+    title: t,
+    content: c,
+    authorUid: currentUser.uid,
+    authorUsername: username,
+    createdAt: Date.now()
+  });
+
+  title.value = "";
+  content.value = "";
+  loadPosts();
+};
+
+async function loadPosts() {
+  posts.innerHTML = "";
+  const q = query(collection(db, "posts"), orderBy("createdAt", "desc"));
+  const snap = await getDocs(q);
+
+  snap.forEach(d => {
+    const p = d.data();
+    const el = document.createElement("div");
+    el.className = "post";
+    el.innerHTML = `<h3>${p.title}</h3><p>${p.content}</p><small>by <a href="profile.html?u=${p.authorUsername}">${p.authorUsername}</a></small>`;
+    posts.appendChild(el);
+  });
+}
+</script>
+</body>
+</html>
