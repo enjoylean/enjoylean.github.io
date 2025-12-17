@@ -82,10 +82,13 @@ const loadProfile = async () => {
 };
 
 window.saveProfile = async () => {
-  await updateDoc(doc(db, "users", profileUid), {
-    bio: bioEl.value
-  });
-  alert("Сохранено");
+  try {
+    await updateDoc(doc(db, "users", profileUid), { bio: bioEl.value });
+    alert("Сохранено");
+  } catch (e) {
+    console.error('Save profile error', e);
+    alert((e.code ? e.code + ': ' : '') + e.message);
+  }
 };
 
 if (usernameParam) loadProfile();
