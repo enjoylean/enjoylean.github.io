@@ -1,46 +1,296 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-  <meta charset="UTF-8" />
+  <meta charset="UTF-8">
   <title>Avidware Forum</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link href="https://fonts.googleapis.com/css2?family=Lexend+Giga:wght@700&display=swap" rel="stylesheet">
   <style>
-    body { margin:0; min-height:100vh; background:linear-gradient(180deg,#0a0415 0%,#0f0a2a 70%); color:#e5e7eb; font-family:'Lexend Giga', Inter, Arial, sans-serif }
-    .wrap { max-width:980px; margin:36px auto; padding:0 18px }
-    .top { display:flex; justify-content:space-between; align-items:center; gap:12px }
-    h2 { margin:0; font-size:28px }
-    a { color:#93c5fd; text-decoration:none }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      background: #0a0415;
+      color: #e5e7eb;
+      font-family: Inter, Arial, sans-serif;
+      min-height: 100vh;
+      display: flex;
+    }
 
-    .post { background:rgba(2,6,23,0.5); padding:18px; border-radius:14px; margin-bottom:14px; box-shadow:0 10px 30px rgba(5,6,20,0.6); backdrop-filter:blur(6px) }
-    input, textarea, button { width:100%; margin-top:10px; padding:12px 14px; border-radius:12px; box-sizing:border-box }
-    input, textarea { background:rgba(2,6,23,0.5); color:#fff; border:1px solid rgba(115,125,150,0.08); transition:box-shadow .16s }
-    textarea { min-height:96px }
-    input:focus, textarea:focus { outline:none; border-color:rgba(157,78,221,0.8); box-shadow:0 8px 24px rgba(157,78,221,0.06) }
-    button { background:linear-gradient(90deg,#8b63ff,#5b21b6); color:#fff; border:none; font-weight:700; cursor:pointer }
-    .post small { color:#9aa6c0 }
+    /* LAYOUT: main + sidebar */
+    .container { display: flex; width: 100%; min-height: 100vh; }
+    .main { flex: 1; display: flex; flex-direction: column; }
+    .sidebar { width: 300px; background: rgba(10, 4, 21, 0.4); border-left: 1px solid rgba(157, 78, 221, 0.2); padding: 20px; overflow-y: auto; }
+
+    /* TOP NAV */
+    .navbar {
+      background: rgba(15, 23, 42, 0.8);
+      backdrop-filter: blur(8px);
+      border-bottom: 1px solid rgba(157, 78, 221, 0.2);
+      padding: 12px 24px;
+      display: flex;
+      gap: 20px;
+      align-items: center;
+    }
+    .navbar a, .navbar button {
+      color: #cbd5e1;
+      text-decoration: none;
+      cursor: pointer;
+      background: none;
+      border: none;
+      font-size: 14px;
+      transition: color 0.2s;
+    }
+    .navbar a:hover, .navbar button:hover { color: #fff; }
+    .navbar .user-info { margin-left: auto; font-size: 13px; }
+    .navbar button { color: #ef4444; }
+
+    /* CONTENT */
+    .content { flex: 1; padding: 20px 24px; overflow-y: auto; }
+
+    /* TABS */
+    .tabs { display: flex; gap: 12px; margin-bottom: 20px; }
+    .tab-btn { padding: 8px 16px; border-radius: 6px; border: none; background: transparent; color: #cbd5e1; cursor: pointer; font-size: 14px; font-weight: 600; transition: all 0.2s; }
+    .tab-btn.active { background: linear-gradient(90deg, #8b63ff, #5b21b6); color: #fff; }
+
+    /* FORUM SECTION */
+    .forum-section {
+      background: rgba(15, 23, 42, 0.6);
+      border-radius: 12px;
+      padding: 16px;
+      margin-bottom: 16px;
+      border: 1px solid rgba(157, 78, 221, 0.1);
+      backdrop-filter: blur(4px);
+    }
+
+    .section-title {
+      font-size: 14px;
+      font-weight: 700;
+      color: #cbd5e1;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-bottom: 12px;
+      padding-bottom: 12px;
+      border-bottom: 1px solid rgba(157, 78, 221, 0.2);
+    }
+
+    .topic {
+      padding: 12px;
+      margin-bottom: 8px;
+      background: rgba(10, 4, 21, 0.3);
+      border-radius: 8px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    .topic:hover { background: rgba(157, 78, 221, 0.1); }
+
+    .topic-left { flex: 1; }
+    .topic-title { color: #93c5fd; font-weight: 600; margin-bottom: 4px; }
+    .topic-meta { font-size: 12px; color: #94a3b8; }
+
+    .topic-right {
+      text-align: right;
+      font-size: 12px;
+      color: #cbd5e1;
+    }
+    .topic-date { color: #64748b; }
+
+    /* CHAT SECTION */
+    .chat-container {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin-top: 20px;
+    }
+
+    .chat-box {
+      background: rgba(15, 23, 42, 0.6);
+      border-radius: 12px;
+      padding: 16px;
+      border: 1px solid rgba(157, 78, 221, 0.1);
+      backdrop-filter: blur(4px);
+      height: 450px;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .chat-title {
+      font-size: 14px;
+      font-weight: 700;
+      color: #cbd5e1;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-bottom: 12px;
+      padding-bottom: 12px;
+      border-bottom: 1px solid rgba(157, 78, 221, 0.2);
+    }
+
+    .chat-messages {
+      flex: 1;
+      overflow-y: auto;
+      margin-bottom: 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .chat-message {
+      background: rgba(10, 4, 21, 0.3);
+      padding: 8px 12px;
+      border-radius: 6px;
+      font-size: 13px;
+      border-left: 2px solid rgba(157, 78, 221, 0.5);
+    }
+
+    .chat-message-author {
+      color: #93c5fd;
+      font-weight: 600;
+      font-size: 12px;
+    }
+
+    .chat-message-text { color: #cbd5e1; margin-top: 2px; }
+
+    .chat-input-group {
+      display: flex;
+      gap: 8px;
+    }
+
+    .chat-input {
+      flex: 1;
+      background: rgba(2, 6, 23, 0.55);
+      border: 1px solid rgba(115, 125, 150, 0.12);
+      color: #fff;
+      padding: 8px 12px;
+      border-radius: 6px;
+      font-size: 13px;
+    }
+
+    .chat-input:focus { outline: none; border-color: rgba(157, 78, 221, 0.8); }
+
+    .chat-send-btn {
+      background: linear-gradient(90deg, #8b63ff, #5b21b6);
+      color: #fff;
+      border: none;
+      padding: 8px 16px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: 600;
+      font-size: 13px;
+      transition: box-shadow 0.2s;
+    }
+
+    .chat-send-btn:hover { box-shadow: 0 6px 16px rgba(92, 33, 182, 0.3); }
+
+    /* SIDEBAR */
+    .sidebar-block {
+      background: rgba(15, 23, 42, 0.5);
+      border-radius: 8px;
+      padding: 12px;
+      margin-bottom: 12px;
+      border: 1px solid rgba(157, 78, 221, 0.1);
+    }
+
+    .sidebar-title {
+      font-size: 12px;
+      font-weight: 700;
+      color: #93c5fd;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 8px;
+    }
+
+    .sidebar-text { font-size: 13px; color: #cbd5e1; line-height: 1.4; }
+    .sidebar-text a { color: #93c5fd; display: block; margin-top: 6px; }
+
+    @media (max-width: 768px) {
+      .container { flex-direction: column; }
+      .sidebar { width: 100%; border-left: none; border-top: 1px solid rgba(157, 78, 221, 0.2); }
+    }
   </style>
 </head>
 <body>
-<div class="wrap">
-  <div class="top">
-    <h2>Forum</h2>
-    <a id="profileLink"></a>
+
+<div class="container">
+  <div class="main">
+    <!-- NAVBAR -->
+    <div class="navbar">
+      <a href="index.html">Index</a>
+      <a href="#">Search</a>
+      <a href="profile.html">Profile</a>
+      <a href="#">PM</a>
+      <a href="#">Premium</a>
+      <div class="user-info">
+        Logged in as: <span id="currentUser">User</span>
+      </div>
+      <button onclick="logout()">Logout</button>
+    </div>
+
+    <!-- CONTENT -->
+    <div class="content">
+      <div class="tabs">
+        <button class="tab-btn active" onclick="switchTab('forum', this)">Forum</button>
+        <button class="tab-btn" onclick="switchTab('chat', this)">Chat</button>
+      </div>
+
+      <!-- FORUM TAB -->
+      <div id="forum-tab" class="tab-content">
+        <!-- GENERAL SECTION -->
+        <div class="forum-section">
+          <div class="section-title">General</div>
+          <div id="generalTopics"></div>
+        </div>
+
+        <!-- PREMIUM SECTION -->
+        <div class="forum-section">
+          <div class="section-title">Premium Lounge</div>
+          <div id="premiumTopics"></div>
+        </div>
+      </div>
+
+      <!-- CHAT TAB -->
+      <div id="chat-tab" class="tab-content" style="display: none;">
+        <div class="chat-box">
+          <div class="chat-title">Live Chat</div>
+          <div class="chat-messages" id="chatMessages"></div>
+          <div class="chat-input-group">
+            <input class="chat-input" id="chatInput" placeholder="Type a message...">
+            <button class="chat-send-btn" onclick="sendMessage()">Send</button>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
 
-  <div class="post">
-    <input id="title" placeholder="Заголовок" />
-    <textarea id="content" rows="4" placeholder="Текст поста"></textarea>
-    <button onclick="createPost()">Создать пост</button>
-  </div>
+  <!-- SIDEBAR -->
+  <div class="sidebar">
+    <div class="sidebar-block">
+      <div class="sidebar-title">📊 Stats</div>
+      <div class="sidebar-text">
+        <div>Users online: <span id="onlineCount">1</span></div>
+        <div style="margin-top: 8px; font-size: 12px; color: #94a3b8;">Last activity: just now</div>
+      </div>
+    </div>
 
-  <div id="posts"></div>
+    <div class="sidebar-block">
+      <div class="sidebar-title">📌 Rules</div>
+      <div class="sidebar-text">Be respectful, no spam, follow guidelines.</div>
+    </div>
+
+    <div class="sidebar-block">
+      <div class="sidebar-title">🎯 Quick Links</div>
+      <div class="sidebar-text">
+        <a href="profile.html">→ My Profile</a>
+        <a href="admin.html">→ Admin</a>
+      </div>
+    </div>
+  </div>
 </div>
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-import { getFirestore, collection, addDoc, query, orderBy, getDocs } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+import { getFirestore, collection, getDocs, addDoc, serverTimestamp, query, orderBy, limit } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
 const firebaseConfig = {
   apiKey: "AIzaSyCIXJyovY1P0fvoEexAApCesqiTphA_mTk",
@@ -56,60 +306,113 @@ const auth = getAuth(app);
 const db = getFirestore(app);
 
 let currentUser = null;
-let username = null;
 
-onAuthStateChanged(auth, async user => {
+// CHECK AUTH
+onAuthStateChanged(auth, (user) => {
   if (!user) {
-    location.href = "login.html";
+    location.href = "index.html";
     return;
   }
-
   currentUser = user;
-
-  const snap = await getDocs(collection(db, "users"));
-  snap.forEach(d => {
-    if (d.id === user.uid) username = d.data().username;
-  });
-
-  document.getElementById("profileLink").innerText = username;
-  document.getElementById("profileLink").href = `profile.html?u=${username}`;
-
-  try { loadPosts(); } catch (e) { console.error('loadPosts error', e); }
+  document.getElementById("currentUser").textContent = user.email.split("@")[0] || user.email;
+  loadForum();
+  loadChat();
 });
 
-window.createPost = async () => {
-  if (!currentUser) return;
-
-  const t = title.value.trim();
-  const c = content.value.trim();
-  if (!t || !c) return;
-
-  await addDoc(collection(db, "posts"), {
-    title: t,
-    content: c,
-    authorUid: currentUser.uid,
-    authorUsername: username,
-    createdAt: Date.now()
-  });
-
-  title.value = "";
-  content.value = "";
-  loadPosts();
+// ===== TAB SWITCH =====
+window.switchTab = function(tab, btn) {
+  document.querySelectorAll(".tab-content").forEach(el => el.style.display = "none");
+  document.querySelectorAll(".tab-btn").forEach(el => el.classList.remove("active"));
+  document.getElementById(tab + "-tab").style.display = "block";
+  if (btn) btn.classList.add("active");
 };
 
-async function loadPosts() {
-  posts.innerHTML = "";
-  const q = query(collection(db, "posts"), orderBy("createdAt", "desc"));
-  const snap = await getDocs(q);
+// ===== LOAD FORUM =====
+async function loadForum() {
+  try {
+    // Load General topics
+    const generalSnap = await getDocs(query(collection(db, "posts"), orderBy("createdAt", "desc"), limit(10)));
+    const generalTopics = document.getElementById("generalTopics");
+    generalTopics.innerHTML = "";
 
-  snap.forEach(d => {
-    const p = d.data();
-    const el = document.createElement("div");
-    el.className = "post";
-    el.innerHTML = `<h3>${p.title}</h3><p>${p.content}</p><small>by <a href="profile.html?u=${p.authorUsername}">${p.authorUsername}</a></small>`;
-    posts.appendChild(el);
-  });
+    if (generalSnap.empty) {
+      generalTopics.innerHTML = '<div style="color: #94a3b8; padding: 12px;">No posts yet. Be the first to post!</div>';
+    } else {
+      generalSnap.forEach(doc => {
+        const post = doc.data();
+        const date = post.createdAt ? new Date(post.createdAt.toDate()).toLocaleDateString() : "Unknown";
+        generalTopics.innerHTML += `
+          <div class="topic">
+            <div class="topic-left">
+              <div class="topic-title">${post.title || "Untitled"}</div>
+              <div class="topic-meta">by ${post.author || "Anonymous"}</div>
+            </div>
+            <div class="topic-right">
+              <div class="topic-date">${date}</div>
+            </div>
+          </div>
+        `;
+      });
+    }
+
+    // Premium topics (empty for now)
+    document.getElementById("premiumTopics").innerHTML = '<div style="color: #94a3b8; padding: 12px;">Premium content coming soon...</div>';
+  } catch (e) {
+    console.error("Load forum error:", e);
+  }
 }
+
+// ===== LOAD CHAT =====
+async function loadChat() {
+  try {
+    const messagesSnap = await getDocs(query(collection(db, "messages"), orderBy("createdAt", "asc"), limit(50)));
+    const chatMessages = document.getElementById("chatMessages");
+    chatMessages.innerHTML = "";
+
+    messagesSnap.forEach(doc => {
+      const msg = doc.data();
+      chatMessages.innerHTML += `
+        <div class="chat-message">
+          <div class="chat-message-author">${msg.author || "Unknown"}:</div>
+          <div class="chat-message-text">${msg.text || ""}</div>
+        </div>
+      `;
+    });
+
+    // Auto-scroll to bottom
+    chatMessages.scrollTop = chatMessages.scrollHeight;
+  } catch (e) {
+    console.error("Load chat error:", e);
+  }
+}
+
+// ===== SEND MESSAGE =====
+window.sendMessage = async () => {
+  const input = document.getElementById("chatInput");
+  const text = input.value.trim();
+
+  if (!text) return;
+
+  try {
+    await addDoc(collection(db, "messages"), {
+      author: currentUser.email.split("@")[0],
+      text,
+      createdAt: serverTimestamp()
+    });
+    input.value = "";
+    loadChat();
+  } catch (e) {
+    console.error("Send message error:", e);
+    alert("Failed to send message");
+  }
+};
+
+// ===== LOGOUT =====
+window.logout = async () => {
+  await signOut(auth);
+  location.href = "index.html";
+};
 </script>
+
 </body>
 </html>
