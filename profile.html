@@ -56,7 +56,7 @@
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-import { getFirestore, collection, query, where, getDocs, doc, updateDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+import { getFirestore, collection, query, where, getDocs, doc, getDoc, updateDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
 const firebaseConfig = {
   apiKey: "AIzaSyCIXJyovY1P0fvoEexAApCesqiTphA_mTk",
@@ -87,8 +87,9 @@ const genderRow = document.getElementById("genderRow");
 
 let profileUid = null;
 let stagedAvatarData = null; // dataURL if user uploads
+let currentAuthUser = null;
 
-// загрузка профиля
+// загрузка профиля по username (url)
 const loadProfile = async () => {
   const q = query(collection(db, "users"), where("username", "==", usernameParam));
   const snap = await getDocs(q);
@@ -99,36 +100,48 @@ const loadProfile = async () => {
   }
 
   const docSnap = snap.docs[0];
-  const data = docSnap.data();
-  profileUid = docSnap.id;
+  populateFromDoc(docSnap.id, docSnap.data());
+};
 
-  usernameEl.innerText = data.username;
-  emailEl.innerText = data.email;
-  bioEl.value = data.bio || "";
-  // avatar
+// загрузка профиля по uid (владелец)
+const loadProfileByUid = async (uid) => {
+  try {
+    const d = await getDoc(doc(db, 'users', uid));
+    if (!d.exists()) {
+      usernameEl.innerText = 'Пользователь не найден';
+      return;
+    }
+    populateFromDoc(d.id, d.data());
+  } catch (e) {
+    console.error('Load profile by uid error', e);
+    usernameEl.innerText = 'Ошибка загрузки';
+  }
+};
+
+function populateFromDoc(id, data) {
+  profileUid = id;
+  usernameEl.innerText = data.username || 'Unknown';
+  emailEl.innerText = data.email || '';
+  bioEl.value = data.bio || '';
   avatarPreview.src = data.avatar || '';
   stagedAvatarData = null;
-  // timezone
   const tz = data.timezone || Intl.DateTimeFormat().resolvedOptions().timeZone || 'UTC';
   populateTimezones(tz);
-  // gender
   const gender = data.gender || '';
   if (gender) {
     const el = document.querySelector(`input[name=gender][value="${gender}"]`);
     if (el) el.checked = true;
   }
-
-  onAuthStateChanged(auth, user => {
-    if (user && user.uid === profileUid) {
-      bioEl.style.display = "block";
-      saveBtn.style.display = "block";
-      avatarControls.style.display = 'block';
-      tzLabel.style.display = 'block';
-      timezoneEl.style.display = 'block';
-      genderRow.style.display = 'block';
-    }
-  });
-};
+  // show edit controls if current signed-in user matches
+  if (currentAuthUser && currentAuthUser.uid === profileUid) {
+    bioEl.style.display = 'block';
+    saveBtn.style.display = 'block';
+    avatarControls.style.display = 'block';
+    tzLabel.style.display = 'block';
+    timezoneEl.style.display = 'block';
+    genderRow.style.display = 'block';
+  }
+}
 
 window.saveProfile = async () => {
   try {
@@ -183,8 +196,17 @@ function populateTimezones(selected) {
   });
 }
 
-if (usernameParam) loadProfile();
-else usernameEl.innerText = "Нет username";
+// wait for auth state, then load appropriate profile
+onAuthStateChanged(auth, user => {
+  currentAuthUser = user;
+  if (usernameParam) {
+    loadProfile();
+  } else if (user) {
+    loadProfileByUid(user.uid);
+  } else {
+    usernameEl.innerText = "Нет username";
+  }
+});
 </script>
 
 </body>
