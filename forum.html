@@ -349,8 +349,15 @@
       <div class="section-title">Casino Wheel</div>
       <input id="betAmount" placeholder="Bet amount (avidcoin)...">
       <div style="margin-top:8px; color:#cbd5e1; font-size:13px">Chance is determined automatically by bet size: smaller bets have higher win chance.</div>
-      <button style="margin-top:10px" onclick="spinCasino()">Spin</button>
-      <div id="casinoResult" style="margin-top:12px;color:#cbd5e1"></div>
+
+      <div id="wheelWrap" style="margin-top:12px; display:flex; gap:16px; align-items:center;">
+        <div id="wheel" style="width:260px; height:260px; border-radius:50%; border:6px solid rgba(255,255,255,0.06); box-shadow:inset 0 6px 30px rgba(0,0,0,0.6); --win-deg:252deg; background: conic-gradient(from -90deg, #2563eb 0deg var(--win-deg), #ef4444 var(--win-deg) 360deg); transition: transform 4s cubic-bezier(.18,.9,.2,1);"></div>
+        <div style="display:flex; flex-direction:column; align-items:center">
+          <div id="pointer" style="width:0;height:0;border-left:14px solid transparent;border-right:14px solid transparent;border-bottom:22px solid #fff; filter:drop-shadow(0 4px 8px rgba(0,0,0,0.6)); transform:translateY(-6px);"></div>
+          <button id="spinBtn" style="margin-top:8px" onclick="spinCasino()">Spin</button>
+          <div id="casinoResult" style="margin-top:12px;color:#cbd5e1; max-width:200px; text-align:center"></div>
+        </div>
+      </div>
     </div>
   </div>
 </div>
@@ -784,28 +791,69 @@ window.spinCasino = async function() {
   } else {
     chance = 50; mult = 2.0;
   }
-  try {
-    // check coins and apply spin atomically
-    const userRef = doc(db, 'users', currentUser.uid);
-    const res = await runTransaction(db, async (tx) => {
-      const udoc = await tx.get(userRef);
-      if (!udoc.exists()) throw 'User doc missing';
-      const coins = udoc.data().avidcoin || 0;
-      if (coins < bet) throw 'Insufficient coins';
-      // determine outcome
-      const win = Math.random() < (chance/100);
-      let net = 0;
-      if (win) net = Math.floor(bet * mult);
-      else net = -bet;
-      tx.update(userRef, { avidcoin: increment(net) });
-      return { win, net };
-    });
-    document.getElementById('casinoResult').textContent = res.win ? `You won ${res.net} ⧫ (chance ${chance}%)` : `You lost ${-res.net} ⧫ (chance ${chance}%)`;
+  // Prepare visual wheel
+  const wheel = document.getElementById('wheel');
+  const spinBtn = document.getElementById('spinBtn');
+  const resultEl = document.getElementById('casinoResult');
+  // set CSS variable for win angle
+  const winDeg = chance * 3.6; // percent -> degrees
+  wheel.style.setProperty('--win-deg', winDeg + 'deg');
+
+  // disable controls while spinning
+  spinBtn.disabled = true;
+  document.getElementById('betAmount').disabled = true;
+  resultEl.textContent = 'Spinning...';
+
+  // compute rotation: several full spins plus random angle
+  const fullSpins = 6;
+  const randAngle = Math.floor(Math.random() * 360);
+  const totalDeg = fullSpins * 360 + randAngle;
+  // start animation
+  wheel.style.transition = 'transform 4s cubic-bezier(.18,.9,.2,1)';
+  wheel.style.transform = `rotate(${totalDeg}deg)`;
+
+  // after animation ends determine result and apply transaction
+  const onEnd = async () => {
+    wheel.removeEventListener('transitionend', onEnd);
+    // compute pointer-facing angle
+    const normalized = totalDeg % 360;
+    const pointerAngle = (360 - normalized) % 360; // angle at top
+    const win = pointerAngle <= winDeg;
+    let net = 0;
+    if (win) net = Math.floor(bet * mult);
+    else net = -bet;
+
+    try {
+      const userRef = doc(db, 'users', currentUser.uid);
+      await runTransaction(db, async (tx) => {
+        const udoc = await tx.get(userRef);
+        if (!udoc.exists()) throw new Error('User doc missing');
+        const coins = udoc.data().avidcoin || 0;
+        if (coins < bet) throw new Error('Insufficient coins');
+        // apply net change
+        tx.update(userRef, { avidcoin: increment(net) });
+        // record game result inside transaction
+        const histRef = doc(collection(db, 'casinoHistory'));
+        tx.set(histRef, { uid: currentUser.uid, bet, win, net, chance, createdAt: serverTimestamp() });
+      });
+      resultEl.textContent = win ? `You won ${net} ⧫ (chance ${chance}%)` : `You lost ${-net} ⧫ (chance ${chance}%)`;
+    } catch (e) {
+      console.error('Casino transaction error', e);
+      resultEl.textContent = 'Spin failed: ' + (e.message || e);
+    }
+
+    // re-enable
+    spinBtn.disabled = false;
+    document.getElementById('betAmount').disabled = false;
     refreshCoinDisplay();
-  } catch (e) {
-    console.error('Casino error', e);
-    alert('Spin failed: ' + (e.message || e));
-  }
+    // reset wheel slowly to avoid jump next spin
+    setTimeout(() => {
+      wheel.style.transition = 'none';
+      wheel.style.transform = 'rotate(' + (randAngle % 360) + 'deg)';
+    }, 300);
+  };
+
+  wheel.addEventListener('transitionend', onEnd);
 }
 
 
