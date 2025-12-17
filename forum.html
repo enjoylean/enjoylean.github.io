@@ -383,14 +383,26 @@ window.switchTab = function(tab) {
 // ===== LOAD FORUM =====
 async function loadForum() {
   try {
-    const postsSnap = await getDocs(query(collection(db, "posts"), orderBy("pinned", "desc"), orderBy("createdAt", "desc"), limit(50)));
+    const postsSnap = await getDocs(collection(db, "posts"));
     const topicsList = document.getElementById("topicsList");
     topicsList.innerHTML = "";
 
     if (postsSnap.empty) {
       topicsList.innerHTML = '<div style="color: #94a3b8; padding: 12px;">No topics yet. Create one!</div>';
     } else {
-      for (const postDoc of postsSnap.docs) {
+      // Сортируем в коде: пиннед вверх, потом по дате
+      const posts = postsSnap.docs.map(d => ({ id: d.id, ...d.data() }));
+      posts.sort((a, b) => {
+        if ((b.pinned || false) - (a.pinned || false) !== 0) {
+          return (b.pinned || false) - (a.pinned || false);
+        }
+        const timeA = a.createdAt?.toDate?.() || new Date(0);
+        const timeB = b.createdAt?.toDate?.() || new Date(0);
+        return timeB - timeA;
+      });
+      
+      for (const postData of posts) {
+        const postDoc = { id: postData.id, data: () => postData };
         const post = postDoc.data();
         const date = post.createdAt ? new Date(post.createdAt.toDate()).toLocaleDateString() : "Unknown";
         const username = post.username || post.author || "Anonymous";
@@ -402,7 +414,7 @@ async function loadForum() {
         const closed = post.closed ? " 🔒" : "";
 
         topicsList.innerHTML += `
-          <div class="topic" onclick="viewThread('${postDoc.id}', '${post.title}', '${username}', '${date}')">
+          <div class="topic" onclick="viewThread('${post.id}', '${post.title}', '${username}', '${date}')">
             <div class="topic-left">
               <div class="topic-title">${pin}${post.title}${closed}</div>
               <div class="topic-meta">Started by ${username}</div>
@@ -568,12 +580,18 @@ window.publishPost = async () => {
 // ===== LOAD CHAT =====
 async function loadChat() {
   try {
-    const messagesSnap = await getDocs(query(collection(db, "messages"), orderBy("createdAt", "asc"), limit(50)));
+    const messagesSnap = await getDocs(collection(db, "messages"));
     const chatMessages = document.getElementById("chatMessages");
     chatMessages.innerHTML = "";
 
-    messagesSnap.forEach(doc => {
-      const msg = doc.data();
+    // Сортируем по дате в коде
+    const msgs = messagesSnap.docs.map(d => d.data()).sort((a, b) => {
+      const timeA = a.createdAt?.toDate?.() || new Date(0);
+      const timeB = b.createdAt?.toDate?.() || new Date(0);
+      return timeA - timeB;
+    });
+    
+    msgs.forEach(msg => {
       const username = msg.username || msg.author || "Unknown";
       chatMessages.innerHTML += `
         <div class="chat-message">
