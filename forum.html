@@ -251,13 +251,8 @@
       .topic { flex-direction: column; align-items: flex-start; }
       .topic-right { margin-top: 8px; }
     }
-    /* Wheel & pointer animations */
-    #wheel { transform-origin: 50% 50%; will-change: transform; }
-    #wheel.spinning { box-shadow: 0 12px 40px rgba(92,33,182,0.35), inset 0 -6px 40px rgba(0,0,0,0.6); animation: wheelGlow 0.8s infinite alternate; }
-    @keyframes wheelGlow { from { filter: drop-shadow(0 6px 12px rgba(99,102,241,0.06)); } to { filter: drop-shadow(0 20px 40px rgba(99,102,241,0.14)); } }
-    #pointer { transform-origin: center top; }
-    #pointer.spin-pointer { animation: pointerWobble 0.12s infinite linear; }
-    @keyframes pointerWobble { 0% { transform: translateY(-6px) rotate(-6deg); } 50% { transform: translateY(-6px) rotate(6deg); } 100% { transform: translateY(-6px) rotate(-6deg); } }
+  </style>
+  <link rel="stylesheet" href="casino-wheel.css">
   </style>
 </head>
 <body>
@@ -801,102 +796,7 @@ async function buyItem(itemId, price, sellerUid) {
 }
 
 // ===== CASINO =====
-window.updateCasinoDisplay = function() {
-  const bet = parseInt(document.getElementById('betAmount').value, 10) || 0;
-  let chance = 70, mult = 1.2;
-  if (bet <= 50) {
-    chance = 70; mult = 1.2;
-  } else if (bet <= 200) {
-    chance = 60; mult = 1.5;
-  } else {
-    chance = 50; mult = 2.0;
-  }
-  document.getElementById('chanceDisplay').textContent = chance.toFixed(2) + '%';
-  document.getElementById('multDisplay').textContent = 'x' + mult.toFixed(2);
-};
-
-window.spinCasino = async function() {
-  const bet = parseInt(document.getElementById('betAmount').value, 10);
-  if (!bet || bet <= 0) { alert('Enter bet'); return; }
-  // Determine chance and multiplier based on bet size
-  let chance = 70;
-  let mult = 1.2;
-  if (bet <= 50) {
-    chance = 70; mult = 1.2;
-  } else if (bet <= 200) {
-    chance = 60; mult = 1.5;
-  } else {
-    chance = 50; mult = 2.0;
-  }
-  // Prepare visual wheel
-  const wheel = document.getElementById('wheel');
-  const spinBtn = document.getElementById('spinBtn');
-  const resultEl = document.getElementById('casinoResult');
-  const pointer = document.getElementById('pointer');
-  // set CSS variable for win angle
-  const winDeg = chance * 3.6; // percent -> degrees
-  wheel.style.setProperty('--win-deg', winDeg + 'deg');
-
-  // disable controls while spinning and add spinning visuals
-  spinBtn.disabled = true;
-  document.getElementById('betAmount').disabled = true;
-  resultEl.textContent = 'Spinning...';
-  wheel.classList.add('spinning');
-  if (pointer) pointer.classList.add('spin-pointer');
-
-  // compute rotation: several full spins plus random angle
-  const fullSpins = 6;
-  const randAngle = Math.floor(Math.random() * 360);
-  const totalDeg = fullSpins * 360 + randAngle;
-  // start animation
-  wheel.style.transition = 'transform 4s cubic-bezier(.18,.9,.2,1)';
-  wheel.style.transform = `rotate(${totalDeg}deg)`;
-
-  // after animation ends determine result and apply transaction
-  const onEnd = async () => {
-    wheel.removeEventListener('transitionend', onEnd);
-    // compute pointer-facing angle
-    const normalized = totalDeg % 360;
-    const pointerAngle = (360 - normalized) % 360; // angle at top
-    const win = pointerAngle <= winDeg;
-    let net = 0;
-    if (win) net = Math.floor(bet * mult);
-    else net = -bet;
-
-    try {
-      const userRef = doc(db, 'users', currentUser.uid);
-      await runTransaction(db, async (tx) => {
-        const udoc = await tx.get(userRef);
-        if (!udoc.exists()) throw new Error('User doc missing');
-        const coins = udoc.data().avidcoin || 0;
-        if (coins < bet) throw new Error('Insufficient coins');
-        // apply net change
-        tx.update(userRef, { avidcoin: increment(net) });
-        // record game result inside transaction
-        const histRef = doc(collection(db, 'casinoHistory'));
-        tx.set(histRef, { uid: currentUser.uid, bet, win, net, chance, createdAt: serverTimestamp() });
-      });
-      resultEl.textContent = win ? `You won ${net} ⧫ (chance ${chance}%)` : `You lost ${-net} ⧫ (chance ${chance}%)`;
-    } catch (e) {
-      console.error('Casino transaction error', e);
-      resultEl.textContent = 'Spin failed: ' + (e.message || e);
-    }
-
-    // re-enable
-    spinBtn.disabled = false;
-    document.getElementById('betAmount').disabled = false;
-    wheel.classList.remove('spinning');
-    if (pointer) pointer.classList.remove('spin-pointer');
-    refreshCoinDisplay();
-    // reset wheel slowly to avoid jump next spin
-    setTimeout(() => {
-      wheel.style.transition = 'none';
-      wheel.style.transform = 'rotate(' + (randAngle % 360) + 'deg)';
-    }, 300);
-  };
-
-  wheel.addEventListener('transitionend', onEnd);
-}
+// Imported from casino-wheel.js
 
 
 // ===== SEND MESSAGE =====
@@ -1002,6 +902,9 @@ window.logout = async () => {
   await signOut(auth);
   location.href = "index.html";
 };
+
+// ===== IMPORT CASINO WHEEL =====
+import('./casino-wheel.js');
 </script>
 
 </body>
