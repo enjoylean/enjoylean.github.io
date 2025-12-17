@@ -137,6 +137,30 @@ function showError(msg, err) {
 }
 
 // ===== FIREBASE ИМПОРТЫ =====
+// debug: capture identitytoolkit responses (wrap fetch)
+(function(){
+  const origFetch = window.fetch.bind(window);
+  window.fetch = async function(input, init){
+    const res = await origFetch(input, init);
+    try{
+      const url = (typeof input === 'string') ? input : (input && input.url) || '';
+      if (url && url.includes('identitytoolkit.googleapis.com')){
+        const clone = res.clone();
+        const txt = await clone.text();
+        try{
+          const json = JSON.parse(txt);
+          showError('Captured server response', json);
+        }catch(err){
+          showError('Captured server response (non-JSON)', txt);
+        }
+      }
+    }catch(err){
+      console.warn('fetch wrapper error', err);
+    }
+    return res;
+  };
+})();
+
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 import { getFirestore, doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
