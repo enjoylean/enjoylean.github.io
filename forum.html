@@ -367,6 +367,8 @@
             <button style="flex:1; padding: 6px; background: rgba(157, 78, 221, 0.2); border: 1px solid rgba(157, 78, 221, 0.3); border-radius: 4px; color: #cbd5e1; cursor: pointer;" onclick="document.getElementById('betAmount').value = 50; document.getElementById('betSlider').value = 50; updateCasinoDisplay()">x2</button>
             <button style="flex:1; padding: 6px; background: rgba(157, 78, 221, 0.2); border: 1px solid rgba(157, 78, 221, 0.3); border-radius: 4px; color: #cbd5e1; cursor: pointer;" onclick="document.getElementById('betAmount').value = 100; document.getElementById('betSlider').value = 100; updateCasinoDisplay()">Max</button>
           </div>
+          <div style="font-size: 12px; font-weight: 700; color: #cbd5e1; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px;">Chance</div>
+          <div style="font-size: 28px; font-weight: 700; color: #fef08a; margin-bottom: 16px;" id="chanceDisplay">70.00%</div>
           <div style="font-size: 12px; font-weight: 700; color: #cbd5e1; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px;">Multiplier</div>
           <div style="font-size: 24px; font-weight: 700; color: #fef08a; margin-bottom: 16px;" id="multDisplay">x1.20</div>
           <button id="spinBtn" style="width: 100%; padding: 12px; background: linear-gradient(90deg, #10b981, #059669); color: #fff; border: none; border-radius: 6px; cursor: pointer; font-weight: 700; font-size: 14px;" onclick="spinCasino()">Spin</button>
@@ -375,12 +377,7 @@
 
       <!-- CENTER: WHEEL -->
       <div style="flex:1; display: flex; flex-direction: column; align-items: center;">
-        <div id="wheel" style="width:320px; height:320px; border-radius:50%; border:8px solid rgba(255,255,255,0.08); box-shadow:inset 0 8px 40px rgba(0,0,0,0.8), 0 0 40px rgba(99,102,241,0.1); --win-deg:252deg; background: conic-gradient(from -90deg, #2563eb 0deg var(--win-deg), #ef4444 var(--win-deg) 360deg); transition: transform 4s cubic-bezier(.18,.9,.2,1); position: relative; display: flex; align-items: center; justify-content: center;">
-          <div style="position: absolute; top: 20px; text-align: center;">
-            <div style="font-size: 12px; color: rgba(255,255,255,0.5); text-transform: uppercase; letter-spacing: 1px;">Chance</div>
-            <div style="font-size: 36px; font-weight: 700; color: #fef08a;" id="chanceDisplay">70.00%</div>
-          </div>
-        </div>
+        <div id="wheel" style="width:320px; height:320px; border-radius:50%; border:8px solid rgba(255,255,255,0.08); box-shadow:inset 0 8px 40px rgba(0,0,0,0.8), 0 0 40px rgba(99,102,241,0.1); --win-deg:252deg; background: conic-gradient(from -90deg, #2563eb 0deg var(--win-deg), #ef4444 var(--win-deg) 360deg); transition: transform 4s cubic-bezier(.18,.9,.2,1); position: relative;"></div>
         <div id="pointer" style="width:0; height:0; border-left:18px solid transparent; border-right:18px solid transparent; border-bottom:28px solid #10b981; filter:drop-shadow(0 4px 12px rgba(0,0,0,0.8)); margin-top: -36px; z-index: 10;"></div>
         <div id="casinoResult" style="margin-top:20px; color:#cbd5e1; text-align:center; font-size: 14px; min-height: 20px;"></div>
       </div>
