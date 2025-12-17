@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <title>Admin – Invites</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <style>
+    body { background:#020617; color:#e5e7eb; font-family:Arial; margin:0; padding:20px }
+    .card { max-width:500px; margin:auto; background:#0f172a; padding:20px; border-radius:12px }
+    button { width:100%; padding:12px; border:none; border-radius:8px; background:#2563eb; color:#fff; cursor:pointer; margin-top:10px }
+    .code { margin-top:15px; padding:12px; background:#020617; border-radius:8px; font-family:monospace; text-align:center }
+  </style>
+</head>
+<body>
+
+<div class="card">
+  <h2>Admin – Invite Generator</h2>
+  <button onclick="generateInvite()">Generate Invite</button>
+  <div class="code" id="result">—</div>
+</div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+import { getFirestore, doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyCIXJyovY1P0fvoEexAApCesqiTphA_mTk",
+  authDomain: "avidware.firebaseapp.com",
+  projectId: "avidware",
+  storageBucket: "avidware.firebasestorage.app",
+  messagingSenderId: "1003506881786",
+  appId: "1:1003506881786:web:8c64d2aaf477fdf009e543"
+};
+
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getFirestore(app);
+
+let currentUser = null;
+let isAdmin = false;
+
+onAuthStateChanged(auth, async user => {
+  if (!user) {
+    location.href = "login.html";
+    return;
+  }
+
+  currentUser = user;
+  const snap = await getDoc(doc(db, "users", user.uid));
+
+  if (!snap.exists() || snap.data().role !== "admin") {
+    document.body.innerHTML = "<h2>Access denied</h2>";
+    return;
+  }
+
+  isAdmin = true;
+});
+
+window.generateInvite = async () => {
+  if (!isAdmin) return;
+
+  const code = "AVID-" + Math.random().toString(36).substring(2, 6).toUpperCase()
+               + "-" + Math.random().toString(36).substring(2, 6).toUpperCase();
+
+  await setDoc(doc(db, "invites", code), {
+    createdBy: currentUser.uid,
+    used: false,
+    createdAt: Date.now()
+  });
+
+  document.getElementById("result").innerText = code;
+};
+</script>
+
+</body>
+</html>
