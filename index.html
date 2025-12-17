@@ -67,8 +67,8 @@
 
 <div class="card">
   <div class="tabs">
-    <button class="tab-btn active" onclick="switchTab('login')">Login</button>
-    <button class="tab-btn" onclick="switchTab('register')">Register</button>
+    <button class="tab-btn active" onclick="switchTab('login', this)">Login</button>
+    <button class="tab-btn" onclick="switchTab('register', this)">Register</button>
   </div>
 
   <div id="login" class="form-section active">
@@ -103,12 +103,38 @@ text.split("").forEach(char => {
 });
 
 // ===== ПЕРЕКЛЮЧЕНИЕ ТАБОВ =====
-window.switchTab = function(tab) {
+window.switchTab = function(tab, btn) {
   document.querySelectorAll(".form-section").forEach(el => el.classList.remove("active"));
   document.querySelectorAll(".tab-btn").forEach(el => el.classList.remove("active"));
   document.getElementById(tab).classList.add("active");
-  event.target.classList.add("active");
+  if (btn) btn.classList.add('active');
 };
+
+// display debug/error info in UI (declared before handlers)
+function showError(msg, err) {
+  console.warn(msg, err || '');
+  let el = document.getElementById('debugError');
+  if (!el) {
+    el = document.createElement('div');
+    el.id = 'debugError';
+    el.style.cssText = 'margin-top:12px;padding:10px;border-radius:10px;background:rgba(255,50,50,0.06);color:#ffdede;font-size:13px;word-break:break-word;';
+    const container = document.querySelector('.card') || document.body;
+    container.appendChild(el);
+  }
+  el.innerText = msg;
+  if (err) {
+    const json = JSON.stringify(err, Object.getOwnPropertyNames(err), 2);
+    let pre = document.getElementById('debugErrStack');
+    if (!pre) {
+      pre = document.createElement('pre');
+      pre.id = 'debugErrStack';
+      pre.style.cssText = 'margin-top:8px;color:#ffdede;opacity:0.95;white-space:pre-wrap;font-size:12px;background:rgba(0,0,0,0.12);padding:8px;border-radius:8px;';
+      const container = document.querySelector('.card') || document.body;
+      container.appendChild(pre);
+    }
+    pre.innerText = json;
+  }
+}
 
 // ===== FIREBASE ИМПОРТЫ =====
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
@@ -146,25 +172,34 @@ try {
 // ===== LOGIN =====
 document.getElementById("loginBtn").addEventListener("click", async () => {
   try {
-    const email = document.getElementById("loginEmail").value;
-    const pass = document.getElementById("loginPassword").value;
+    const email = (document.getElementById("loginEmail").value || "").trim();
+    const pass = (document.getElementById("loginPassword").value || "").trim();
+
+    if (!email) { showError('Please enter your email'); return; }
+    if (!/^\S+@\S+\.\S+$/.test(email)) { showError('Invalid email format'); return; }
+    if (!pass || pass.length < 6) { showError('Password must be at least 6 characters'); return; }
+
     await signInWithEmailAndPassword(auth, email, pass);
     location.href = "forum.html";
   } catch (e) {
     console.error('Login error', e);
-    alert((e.code ? e.code + ': ' : '') + e.message);
+    showError((e.code ? e.code + ': ' : '') + e.message, e);
   }
 });
 
 // ===== REGISTER =====
 document.getElementById("registerBtn").addEventListener("click", async () => {
   try {
-    const username = document.getElementById("username").value.trim();
-    const email = document.getElementById("regEmail").value;
-    const pass = document.getElementById("regPassword").value;
+    const username = (document.getElementById("username").value || "").trim();
+    const email = (document.getElementById("regEmail").value || "").trim();
+    const pass = (document.getElementById("regPassword").value || "").trim();
+
+    if (!email) { showError('Please enter your email'); return; }
+    if (!/^\S+@\S+\.\S+$/.test(email)) { showError('Invalid email format'); return; }
+    if (!pass || pass.length < 6) { showError('Password must be at least 6 characters'); return; }
 
     if (!/^[a-zA-Z0-9_]{3,20}$/.test(username)) {
-      alert("Username: a-z A-Z 0-9 _ (3–20)");
+      showError("Username: a-z A-Z 0-9 _ (3–20)");
       return;
     }
 
@@ -176,7 +211,7 @@ document.getElementById("registerBtn").addEventListener("click", async () => {
       const snap = await getDoc(inviteRef);
 
       if (!snap.exists() || snap.data().used) {
-        alert("Invalid invite");
+        showError("Invalid invite");
         return;
       }
     }
@@ -201,7 +236,7 @@ document.getElementById("registerBtn").addEventListener("click", async () => {
     location.href = "forum.html";
   } catch (e) {
     console.error('Register error', e);
-    alert((e.code ? e.code + ': ' : '') + e.message);
+    showError((e.code ? e.code + ': ' : '') + e.message, e);
   }
 });
 </script>
