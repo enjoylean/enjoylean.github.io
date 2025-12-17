@@ -15,6 +15,9 @@
     input:focus, textarea:focus { outline:none; border-color:rgba(157,78,221,0.9); box-shadow:0 10px 30px rgba(157,78,221,0.08) }
     button { background:linear-gradient(90deg,#8b63ff,#5b21b6); color:#fff; border:none; font-weight:700; cursor:pointer }
     .muted { color:#9aa6c0; font-size:14px; margin-top:6px }
+    .avatar-row { display:flex; gap:12px; align-items:center; margin-top:12px }
+    .avatar-preview { width:84px; height:84px; border-radius:12px; background:rgba(255,255,255,0.04); object-fit:cover; border:1px solid rgba(115,125,150,0.06) }
+    .small { width:auto; padding:8px 10px; border-radius:8px; font-size:13px }
   </style>
 </head>
 <body>
@@ -23,8 +26,31 @@
   <h2 id="username">Загрузка...</h2>
   <div class="muted" id="email"></div>
 
+  <div class="avatar-row">
+    <img id="avatarPreview" class="avatar-preview" src="" alt="avatar">
+    <div style="flex:1">
+      <input id="avatarInput" type="file" accept="image/*" style="display:none">
+      <div id="avatarControls" style="display:none">
+        <button class="small" onclick="document.getElementById('avatarInput').click()">Загрузить фото</button>
+        <button class="small" onclick="removeAvatar()">Удалить</button>
+      </div>
+      <div class="muted" style="margin-top:8px">Аватар пользователя</div>
+    </div>
+  </div>
+
   <textarea id="bio" placeholder="О себе" rows="4" style="display:none"></textarea>
-  <button id="save" style="display:none" onclick="saveProfile()">Сохранить</button>
+
+  <label id="tzLabel" class="muted" style="display:none; margin-top:12px">Часовой пояс</label>
+  <select id="timezone" style="display:none"></select>
+
+  <div id="genderRow" style="display:none; margin-top:12px">
+    <div class="muted">Пол</div>
+    <label style="margin-right:8px"><input type="radio" name="gender" value="male"> Male</label>
+    <label style="margin-right:8px"><input type="radio" name="gender" value="female"> Female</label>
+    <label style="margin-right:8px"><input type="radio" name="gender" value="other"> Other</label>
+  </div>
+
+  <button id="save" style="display:none; margin-top:14px" onclick="saveProfile()">Сохранить</button>
 </div>
 
 <script type="module">
@@ -51,9 +77,16 @@ const usernameParam = params.get("u");
 const usernameEl = document.getElementById("username");
 const emailEl = document.getElementById("email");
 const bioEl = document.getElementById("bio");
+const avatarInput = document.getElementById("avatarInput");
+const avatarPreview = document.getElementById("avatarPreview");
+const avatarControls = document.getElementById("avatarControls");
 const saveBtn = document.getElementById("save");
+const timezoneEl = document.getElementById("timezone");
+const tzLabel = document.getElementById("tzLabel");
+const genderRow = document.getElementById("genderRow");
 
 let profileUid = null;
+let stagedAvatarData = null; // dataURL if user uploads
 
 // загрузка профиля
 const loadProfile = async () => {
@@ -72,24 +105,83 @@ const loadProfile = async () => {
   usernameEl.innerText = data.username;
   emailEl.innerText = data.email;
   bioEl.value = data.bio || "";
+  // avatar
+  avatarPreview.src = data.avatar || '';
+  stagedAvatarData = null;
+  // timezone
+  const tz = data.timezone || Intl.DateTimeFormat().resolvedOptions().timeZone || 'UTC';
+  populateTimezones(tz);
+  // gender
+  const gender = data.gender || '';
+  if (gender) {
+    const el = document.querySelector(`input[name=gender][value="${gender}"]`);
+    if (el) el.checked = true;
+  }
 
   onAuthStateChanged(auth, user => {
     if (user && user.uid === profileUid) {
       bioEl.style.display = "block";
       saveBtn.style.display = "block";
+      avatarControls.style.display = 'block';
+      tzLabel.style.display = 'block';
+      timezoneEl.style.display = 'block';
+      genderRow.style.display = 'block';
     }
   });
 };
 
 window.saveProfile = async () => {
   try {
-    await updateDoc(doc(db, "users", profileUid), { bio: bioEl.value });
+    const updates = { bio: bioEl.value };
+    // timezone
+    if (timezoneEl && timezoneEl.value) updates.timezone = timezoneEl.value;
+    // gender
+    const g = document.querySelector('input[name=gender]:checked');
+    if (g) updates.gender = g.value;
+    // avatar (staged) - null means untouched, '' means remove
+    if (stagedAvatarData !== null) updates.avatar = stagedAvatarData;
+
+    await updateDoc(doc(db, "users", profileUid), updates);
+    stagedAvatarData = null;
     alert("Сохранено");
   } catch (e) {
     console.error('Save profile error', e);
     alert((e.code ? e.code + ': ' : '') + e.message);
   }
 };
+
+// Avatar handling
+avatarInput.addEventListener('change', (ev) => {
+  const f = ev.target.files && ev.target.files[0];
+  if (!f) return;
+  if (!f.type.startsWith('image/')) { alert('Файл должен быть изображением'); return; }
+  const r = new FileReader();
+  r.onload = () => {
+    stagedAvatarData = r.result;
+    avatarPreview.src = stagedAvatarData;
+  };
+  r.readAsDataURL(f);
+});
+
+window.removeAvatar = () => {
+  stagedAvatarData = '';
+  avatarPreview.src = '';
+};
+
+function populateTimezones(selected) {
+  const common = [
+    'UTC','Europe/Moscow','Europe/London','America/New_York','America/Los_Angeles','Asia/Tokyo','Asia/Shanghai'
+  ];
+  timezoneEl.innerHTML = '';
+  const det = Intl.DateTimeFormat().resolvedOptions().timeZone;
+  const opts = Array.from(new Set([det, ...common]));
+  opts.forEach(tz => {
+    const o = document.createElement('option');
+    o.value = tz; o.textContent = tz;
+    if (tz === selected) o.selected = true;
+    timezoneEl.appendChild(o);
+  });
+}
 
 if (usernameParam) loadProfile();
 else usernameEl.innerText = "Нет username";
