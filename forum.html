@@ -2,146 +2,364 @@
 <html lang="ru">
 <head>
   <meta charset="UTF-8">
-  <title>Avidware</title>
+  <title>Avidware Forum</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link href="https://fonts.googleapis.com/css2?family=Lexend+Giga:wght@700&display=swap" rel="stylesheet">
   <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
     body {
-      background:#0a0415; color:#e5e7eb; font-family:Inter, Arial, sans-serif;
-      display:flex; justify-content:center; align-items:center; height:100vh;
-      margin:0; overflow:hidden;
+      background: #0a0415;
+      color: #e5e7eb;
+      font-family: Inter, Arial, sans-serif;
+      min-height: 100vh;
     }
 
-    /* splash / logo */
-    .splash {
-      position:fixed; inset:0;
-      background:linear-gradient(135deg, #0a0415 0%, #1a0033 100%);
-      display:flex; justify-content:center; align-items:center;
-      z-index:9999; pointer-events:none;
-      animation:splashFade 3.6s ease-in-out forwards;
+    /* TOP NAV */
+    .navbar {
+      background: rgba(15, 23, 42, 0.8);
+      backdrop-filter: blur(8px);
+      border-bottom: 1px solid rgba(157, 78, 221, 0.2);
+      padding: 12px 24px;
+      display: flex;
+      gap: 20px;
+      align-items: center;
+    }
+    .navbar a, .navbar button {
+      color: #cbd5e1;
+      text-decoration: none;
+      cursor: pointer;
+      background: none;
+      border: none;
+      font-size: 14px;
+      transition: color 0.2s;
+    }
+    .navbar a:hover, .navbar button:hover { color: #fff; }
+    .navbar .user-info { margin-left: auto; font-size: 13px; }
+    .navbar button { color: #ef4444; }
+
+    /* CONTAINER */
+    .container { max-width: 1200px; margin: 20px auto; padding: 0 20px; }
+
+    /* TABS */
+    .tabs { display: flex; gap: 12px; margin-bottom: 20px; }
+    .tab-btn { padding: 8px 16px; border-radius: 6px; border: none; background: transparent; color: #cbd5e1; cursor: pointer; font-size: 14px; font-weight: 600; transition: all 0.2s; }
+    .tab-btn.active { background: linear-gradient(90deg, #8b63ff, #5b21b6); color: #fff; }
+
+    /* FORUM CATEGORY */
+    .forum-category {
+      background: rgba(15, 23, 42, 0.6);
+      margin-bottom: 20px;
+      border-radius: 8px;
+      overflow: hidden;
+      border: 1px solid rgba(157, 78, 221, 0.1);
+      backdrop-filter: blur(4px);
     }
 
-    @keyframes splashFade { 0%{opacity:1} 60%{opacity:1} 100%{opacity:0} }
+    .category-header {
+      background: linear-gradient(90deg, #8b63ff, #5b21b6);
+      color: #fff;
+      padding: 12px 16px;
+      font-size: 14px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
 
-    .logo-text { font-size:56px; font-weight:700; letter-spacing:6px; display:flex; gap:6px; font-family:'Lexend Giga', sans-serif; }
-    .logo-char { background:linear-gradient(90deg,#fff 0%,#e9ddff 50%,#9d4edd 100%); -webkit-background-clip:text; background-clip:text; -webkit-text-fill-color:transparent; text-shadow:0 0 28px rgba(157,78,221,0.8); transform:translateY(36px); opacity:0; animation:charSlideIn .56s cubic-bezier(.2,.9,.2,1) forwards; }
+    .topic-list { display: flex; flex-direction: column; }
 
-    @keyframes charSlideIn { from{opacity:0; transform:translateY(36px)} to{opacity:1; transform:translateY(0)} }
-    .logo-char:nth-child(1){animation-delay:.08s} .logo-char:nth-child(2){animation-delay:.16s} .logo-char:nth-child(3){animation-delay:.24s}
-    .logo-char:nth-child(4){animation-delay:.32s} .logo-char:nth-child(5){animation-delay:.40s} .logo-char:nth-child(6){animation-delay:.48s}
-    .logo-char:nth-child(7){animation-delay:.56s} .logo-char:nth-child(8){animation-delay:.64s} .logo-char:nth-child(9){animation-delay:.72s}
-    .logo-char:nth-child(10){animation-delay:.80s} .logo-char:nth-child(11){animation-delay:.88s} .logo-char:nth-child(12){animation-delay:.96s}
-    .logo-char:nth-child(13){animation-delay:1.04s}
+    .topic {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 12px 16px;
+      border-top: 1px solid rgba(157, 78, 221, 0.1);
+      transition: background 0.2s;
+      cursor: pointer;
+    }
+    .topic:hover { background: rgba(157, 78, 221, 0.08); }
 
-    /* card + ambient glow */
-    .card { position:relative; background:rgba(15,23,42,0.6); padding:22px; border-radius:14px; width:360px; color:var(--fg,#e5e7eb); backdrop-filter:blur(6px) saturate(1.1); box-shadow: 0 10px 30px rgba(10,2,30,0.6); transform:translateY(0); opacity:0; animation:cardAppear .6s ease-in .9s forwards; }
-    .card::before { content:""; position:absolute; inset:-40px; background:radial-gradient(closest-side, rgba(157,78,221,0.18), transparent 40%); filter:blur(30px); z-index:-1; pointer-events:none; border-radius:18px; }
+    .topic-left { flex: 1; }
+    .topic-left { flex: 1; display:flex; gap:12px; align-items:center; }
+    .topic-avatar { width:48px; height:48px; border-radius:8px; object-fit:cover; background:rgba(255,255,255,0.03); border:1px solid rgba(115,125,150,0.06) }
+    .topic-title { color: #93c5fd; font-weight: 600; margin-bottom: 4px; }
+    .topic-meta { color: #94a3b8; font-size: 12px; }
 
-    @keyframes cardAppear { from{opacity:0; transform:translateY(12px)} to{opacity:1; transform:translateY(0)} }
+    .topic-right { text-align: right; font-size: 12px; color: #cbd5e1; }
+    .topic-replies { color: #93c5fd; font-weight: 600; }
+    .topic-date { color: #64748b; margin-top: 4px; }
 
-    .tabs { display:flex; gap:10px; margin-bottom:18px; }
-    .tab-btn { flex:1; padding:10px; border-radius:999px; border:none; background:transparent; color:#cbd5e1; cursor:pointer; transition:all .28s; font-weight:600 }
-    .tab-btn.active { background:linear-gradient(90deg,#2b3650,#1f2a44); color:#fff; box-shadow:0 6px 16px rgba(45,40,80,0.25) }
+    /* CREATE POST FORM */
+    .create-post-section {
+      background: rgba(15, 23, 42, 0.6);
+      border-radius: 8px;
+      padding: 16px;
+      margin-bottom: 20px;
+      border: 1px solid rgba(157, 78, 221, 0.1);
+      backdrop-filter: blur(4px);
+    }
 
-    .form-section { display:none; opacity:0; transform:translateY(12px); transition:opacity .28s, transform .28s }
-    .form-section.active { display:block; opacity:1; transform:translateY(0) }
+    .section-title {
+      font-size: 14px;
+      font-weight: 700;
+      color: #cbd5e1;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-bottom: 12px;
+    }
 
-    .info-text { font-size:13px; color:#bfc9db; margin-top:12px; padding:10px 12px; background:linear-gradient(90deg, rgba(10,4,21,0.4), rgba(10,4,21,0.2)); border-radius:10px; border-left:3px solid rgba(157,78,221,0.7) }
+    input, textarea {
+      width: 100%;
+      margin-bottom: 10px;
+      padding: 10px 12px;
+      border-radius: 6px;
+      background: rgba(2, 6, 23, 0.55);
+      color: #fff;
+      border: 1px solid rgba(115, 125, 150, 0.12);
+      font-family: Inter, Arial, sans-serif;
+    }
+    input:focus, textarea:focus { outline: none; border-color: rgba(157, 78, 221, 0.8); }
+    textarea { min-height: 80px; resize: vertical; }
 
-    input, button { width:100%; margin-top:10px; padding:12px 14px; border-radius:10px; box-sizing:border-box }
-    input { background:rgba(2,6,23,0.55); color:#fff; border:1px solid rgba(115,125,150,0.12); transition:box-shadow .18s, border-color .18s, transform .18s }
-    input:focus { outline:none; border-color:rgba(157,78,221,0.8); box-shadow:0 6px 18px rgba(157,78,221,0.12); transform:translateY(-2px) }
+    button { 
+      padding: 10px 16px;
+      background: linear-gradient(90deg, #8b63ff, #5b21b6);
+      color: #fff;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: 600;
+      font-size: 14px;
+      transition: box-shadow 0.2s;
+    }
+    button:hover { box-shadow: 0 6px 16px rgba(92, 33, 182, 0.3); }
 
-    button { background:linear-gradient(90deg,#8b63ff,#5b21b6); color:#fff; border:none; font-weight:700; cursor:pointer; transition:transform .12s ease, box-shadow .12s }
-    button:active { transform:translateY(1px) }
-    button:hover { box-shadow:0 12px 30px rgba(92,33,182,0.18) }
+    /* THREAD VIEW */
+    .thread-view { display: none; }
+    .thread-view.active { display: block; }
 
-    .hidden{display:none}
+    .thread-header {
+      background: rgba(15, 23, 42, 0.6);
+      border-radius: 8px;
+      padding: 16px;
+      margin-bottom: 16px;
+      border: 1px solid rgba(157, 78, 221, 0.1);
+    }
+
+    .thread-title { font-size: 18px; font-weight: 700; margin-bottom: 8px; }
+    .thread-meta { font-size: 12px; color: #94a3b8; margin-bottom: 12px; }
+    .thread-back { color: #93c5fd; cursor: pointer; text-decoration: underline; font-size: 12px; }
+    
+    .original-post {
+      background: rgba(10, 4, 21, 0.4);
+      padding: 12px;
+      margin-bottom: 12px;
+      border-radius: 6px;
+      border-left: 3px solid rgba(157, 78, 221, 0.5);
+    }
+
+    .admin-controls {
+      display: flex;
+      gap: 6px;
+      margin-top: 12px;
+      flex-wrap: wrap;
+    }
+
+    .admin-btn {
+      padding: 6px 12px;
+      font-size: 11px;
+      background: rgba(157, 78, 221, 0.3);
+      color: #93c5fd;
+      border: 1px solid rgba(157, 78, 221, 0.5);
+      border-radius: 4px;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+
+    .admin-btn:hover { background: rgba(157, 78, 221, 0.5); }
+
+    .admin-btn.danger { background: rgba(239, 68, 68, 0.2); color: #fca5a5; border-color: rgba(239, 68, 68, 0.5); }
+    .admin-btn.danger:hover { background: rgba(239, 68, 68, 0.3); }
+
+    .replies-container {
+      background: rgba(15, 23, 42, 0.6);
+      border-radius: 8px;
+      padding: 16px;
+      border: 1px solid rgba(157, 78, 221, 0.1);
+      margin-bottom: 16px;
+    }
+
+    .reply-item {
+      background: rgba(10, 4, 21, 0.4);
+      padding: 12px;
+      margin-bottom: 10px;
+      border-radius: 6px;
+      border-left: 3px solid rgba(157, 78, 221, 0.5);
+    }
+
+    .reply-avatar { width:36px; height:36px; border-radius:8px; object-fit:cover; margin-right:8px; background:rgba(255,255,255,0.03); border:1px solid rgba(115,125,150,0.06) }
+
+    .reply-author { color: #93c5fd; font-weight: 600; font-size: 12px; margin-bottom: 4px; }
+    .reply-date { color: #64748b; font-size: 11px; margin-bottom: 6px; }
+    .reply-text { color: #cbd5e1; font-size: 13px; }
+
+    .reply-form {
+      background: rgba(15, 23, 42, 0.6);
+      border-radius: 8px;
+      padding: 16px;
+      border: 1px solid rgba(157, 78, 221, 0.1);
+    }
+
+    .reply-form-title { font-size: 12px; font-weight: 700; text-transform: uppercase; margin-bottom: 12px; }
+    .reply-input-group { display: flex; gap: 8px; }
+    .reply-input-group input { flex: 1; }
+
+    /* CHAT */
+    .chat-box {
+      background: rgba(15, 23, 42, 0.6);
+      border-radius: 8px;
+      padding: 16px;
+      border: 1px solid rgba(157, 78, 221, 0.1);
+      height: 500px;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .chat-messages {
+      flex: 1;
+      overflow-y: auto;
+      margin-bottom: 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .chat-message {
+      background: rgba(10, 4, 21, 0.4);
+      padding: 8px 12px;
+      border-radius: 6px;
+      border-left: 2px solid rgba(157, 78, 221, 0.5);
+      font-size: 12px;
+    }
+
+    .chat-message-author { color: #93c5fd; font-weight: 600; font-size: 11px; }
+    .chat-message-text { color: #cbd5e1; margin-top: 2px; }
+
+    .chat-input-group { display: flex; gap: 8px; }
+    .chat-input-group input { flex: 1; }
+
+    @media (max-width: 768px) {
+      .topic { flex-direction: column; align-items: flex-start; }
+      .topic-right { margin-top: 8px; }
+    }
   </style>
 </head>
 <body>
 
-<div class="splash">
-  <div class="logo-text" id="logoText"></div>
+<!-- NAVBAR -->
+<div class="navbar">
+  <a href="index.html">Index</a>
+  <a href="#">Search</a>
+  <a href="profile.html">Profile</a>
+  <a href="#">PM</a>
+  <div class="user-info">
+    Logged in as: <span id="currentUser">User</span>
+    <span id="coinBal" style="margin-left:12px; font-weight:700; color:#fef08a">0 ⧫</span>
+    <button style="margin-left:10px; color:#10b981;" onclick="claimDaily()" id="dailyBtn">Daily</button>
+  </div>
+  <button onclick="logout()">Logout</button>
 </div>
 
-<div class="card">
+<div class="container">
   <div class="tabs">
-    <button class="tab-btn active" onclick="switchTab('login', this)">Login</button>
-    <button class="tab-btn" onclick="switchTab('register', this)">Register</button>
+    <button class="tab-btn active" onclick="switchTab('forum')">Forum</button>
+    <button class="tab-btn" onclick="switchTab('chat')">Chat</button>
+    <button class="tab-btn" onclick="switchTab('shop')">Shop</button>
+    <button class="tab-btn" onclick="switchTab('casino')">Casino</button>
   </div>
 
-  <div id="login" class="form-section active">
-    <h2>Login</h2>
-    <input id="loginEmail" placeholder="Email">
-    <input id="loginPassword" type="password" placeholder="Password">
-    <button onclick="doLogin()">Login</button>
+  <!-- FORUM TAB -->
+  <div id="forum-tab" class="tab-content">
+    <!-- CREATE POST -->
+    <div class="create-post-section">
+      <div class="section-title">Create New Topic</div>
+      <input id="postTitle" placeholder="Topic title...">
+      <textarea id="postContent" placeholder="Write your message..."></textarea>
+      <button onclick="publishPost()">Create Topic</button>
+    </div>
+
+    <!-- FORUM CATEGORIES -->
+    <div class="forum-category">
+      <div class="category-header">General Discussion</div>
+      <div class="topic-list" id="topicsList"></div>
+    </div>
   </div>
 
-  <div id="register" class="form-section">
-    <h2>Register</h2>
-    <input id="username" placeholder="Username">
-    <input id="regEmail" placeholder="Email">
-    <input id="regPassword" type="password" placeholder="Password">
-    <input id="invite" placeholder="Invite code" class="hidden">
-    <button onclick="doRegister()">Register</button>
-    <div class="info-text">
-      💡 Get invite: <a href="https://t.me/avidware" target="_blank" style="color:#93c5fd; text-decoration:none;">t.me/avidware</a>
+  <!-- THREAD VIEW -->
+  <div id="thread-view" class="thread-view">
+    <div class="thread-header">
+      <div class="thread-back" onclick="backToForum()">← Back to Forum</div>
+      <div class="thread-title" id="threadTitle"></div>
+      <div class="thread-meta" id="threadMeta"></div>
+      <div id="threadStatus" style="margin-top: 8px; font-size: 11px; color: #fca5a5;"></div>
+    </div>
+
+    <div class="original-post" id="originalPost"></div>
+
+    <div class="replies-container" id="repliesContainer"></div>
+
+    <div class="reply-form">
+      <div class="reply-form-title">Write a Reply</div>
+      <div class="reply-input-group">
+        <input id="replyInput" placeholder="Write your reply...">
+        <button onclick="publishReply()">Post Reply</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- CHAT TAB -->
+  <div id="chat-tab" class="tab-content" style="display: none;">
+    <div class="chat-box">
+      <div class="section-title" style="margin-bottom: 12px;">💬 Live Chat</div>
+      <div class="chat-messages" id="chatMessages"></div>
+      <div class="chat-input-group">
+        <input id="chatInput" placeholder="Type a message...">
+        <button onclick="sendMessage()">Send</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- SHOP TAB -->
+  <div id="shop-tab" class="tab-content" style="display: none;">
+    <div class="create-post-section">
+      <div class="section-title">Create Listing</div>
+      <input id="itemTitle" placeholder="Item title...">
+      <textarea id="itemDesc" placeholder="Description..."></textarea>
+      <input id="itemPrice" placeholder="Price (avidcoin)...">
+      <button onclick="createListing()">Create Listing</button>
+    </div>
+    <div class="forum-category">
+      <div class="category-header">Marketplace</div>
+      <div class="topic-list" id="shopList"></div>
+    </div>
+  </div>
+
+  <!-- CASINO TAB -->
+  <div id="casino-tab" class="tab-content" style="display:none;">
+    <div class="create-post-section">
+      <div class="section-title">Casino Wheel</div>
+      <input id="betAmount" placeholder="Bet amount (avidcoin)...">
+      <div style="margin-top:8px; color:#cbd5e1; font-size:13px">Chance is determined automatically by bet size: smaller bets have higher win chance.</div>
+      <button style="margin-top:10px" onclick="spinCasino()">Spin</button>
+      <div id="casinoResult" style="margin-top:12px;color:#cbd5e1"></div>
     </div>
   </div>
 </div>
 
 <script type="module">
-// ===== АНИМАЦИЯ БУКВ =====
-const text = "avidware.fun";
-const logoEl = document.getElementById("logoText");
-text.split("").forEach(char => {
-  const span = document.createElement("span");
-  span.className = "logo-char";
-  span.textContent = char;
-  logoEl.appendChild(span);
-});
-
-// ===== ПЕРЕКЛЮЧЕНИЕ ТАБОВ =====
-window.switchTab = function(tab, btn) {
-  document.querySelectorAll(".form-section").forEach(el => el.classList.remove("active"));
-  document.querySelectorAll(".tab-btn").forEach(el => el.classList.remove("active"));
-  document.getElementById(tab).classList.add("active");
-  if (btn) btn.classList.add('active');
-};
-
-// display debug/error info in UI (declared before handlers)
-function showError(msg, err) {
-  console.warn(msg, err || '');
-  let el = document.getElementById('debugError');
-  if (!el) {
-    el = document.createElement('div');
-    el.id = 'debugError';
-    el.style.cssText = 'margin-top:12px;padding:10px;border-radius:10px;background:rgba(255,50,50,0.06);color:#ffdede;font-size:13px;word-break:break-word;';
-    const container = document.querySelector('.card') || document.body;
-    container.appendChild(el);
-  }
-  el.innerText = msg;
-  if (err) {
-    const json = JSON.stringify(err, Object.getOwnPropertyNames(err), 2);
-    let pre = document.getElementById('debugErrStack');
-    if (!pre) {
-      pre = document.createElement('pre');
-      pre.id = 'debugErrStack';
-      pre.style.cssText = 'margin-top:8px;color:#ffdede;opacity:0.95;white-space:pre-wrap;font-size:12px;background:rgba(0,0,0,0.12);padding:8px;border-radius:8px;';
-      const container = document.querySelector('.card') || document.body;
-      container.appendChild(pre);
-    }
-    pre.innerText = json;
-  }
-}
-
-// ===== FIREBASE ИМПОРТЫ =====
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-import { getFirestore, doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+import { getFirestore, collection, getDocs, addDoc, serverTimestamp, query, orderBy, limit, doc, getDoc, updateDoc, deleteDoc, increment, runTransaction } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
-// ===== FIREBASE CONFIG =====
 const firebaseConfig = {
   apiKey: "AIzaSyCIXJyovY1P0fvoEexAApCesqiTphA_mTk",
   authDomain: "avidware.firebaseapp.com",
@@ -155,82 +373,544 @@ const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
 
-// ===== INVITE CONFIG =====
-let invitesEnabled = false;
+let currentUser = null;
+let currentThreadId = null;
+let currentThreadData = null;
+let isAdmin = false;
 
-const cfgSnap = await getDoc(doc(db, "config", "site"));
-if (cfgSnap.exists() && cfgSnap.data().invitesEnabled === true) {
-  invitesEnabled = true;
-  document.getElementById("invite").classList.remove("hidden");
+// CHECK AUTH
+onAuthStateChanged(auth, async (user) => {
+  if (!user) {
+    location.href = "index.html";
+    return;
+  }
+  currentUser = user;
+  document.getElementById("currentUser").textContent = user.email.split("@")[0] || user.email;
+  
+  // Check if admin
+  try {
+    const userDoc = await getDoc(doc(db, "users", user.uid));
+    if (userDoc.exists()) {
+      isAdmin = userDoc.data().role === "admin";
+    }
+  } catch (e) {
+    console.error("Error checking admin:", e);
+  }
+  
+  loadForum();
+  loadChat();
+  // show current coin balance immediately
+  refreshCoinDisplay();
+  
+  // Auto-reload chat every 2 seconds
+  setInterval(loadChat, 2000);
+});
+
+// ===== TAB SWITCH =====
+window.switchTab = function(tab) {
+  document.querySelectorAll(".tab-content").forEach(el => el.style.display = "none");
+  document.querySelectorAll(".thread-view").forEach(el => el.classList.remove("active"));
+  document.getElementById(tab + "-tab").style.display = "block";
+  
+  document.querySelectorAll(".tab-btn").forEach(el => el.classList.remove("active"));
+  event.target.classList.add("active");
+};
+
+// ===== LOAD FORUM =====
+async function loadForum() {
+  try {
+    const postsSnap = await getDocs(collection(db, "posts"));
+    const topicsList = document.getElementById("topicsList");
+    topicsList.innerHTML = "";
+
+    if (postsSnap.empty) {
+      topicsList.innerHTML = '<div style="color: #94a3b8; padding: 12px;">No topics yet. Create one!</div>';
+    } else {
+      // Сортируем в коде: пиннед вверх, потом по дате
+      const posts = postsSnap.docs.map(d => ({ id: d.id, ...d.data() }));
+      posts.sort((a, b) => {
+        if ((b.pinned || false) - (a.pinned || false) !== 0) {
+          return (b.pinned || false) - (a.pinned || false);
+        }
+        const timeA = a.createdAt?.toDate?.() || new Date(0);
+        const timeB = b.createdAt?.toDate?.() || new Date(0);
+        return timeB - timeA;
+      });
+      
+      for (const postData of posts) {
+        const postDoc = { id: postData.id, data: () => postData };
+        const post = postDoc.data();
+        const date = post.createdAt ? new Date(post.createdAt.toDate()).toLocaleDateString() : "Unknown";
+        const username = post.username || post.author || "Anonymous";
+        const avatar = post.avatar || 'https://www.gravatar.com/avatar/?d=mp&s=48';
+        
+        const repliesSnap = await getDocs(collection(db, `posts/${postDoc.id}/replies`));
+        const replyCount = repliesSnap.size;
+        
+        const pin = post.pinned ? "📌 " : "";
+        const closed = post.closed ? " 🔒" : "";
+
+        topicsList.innerHTML += `
+          <div class="topic" onclick="viewThread('${post.id}', '${post.title}', '${username}', '${date}')">
+            <div class="topic-left">
+              <img class="topic-avatar" src="${avatar}" alt="avatar">
+              <div>
+                <div class="topic-title">${pin}${post.title}${closed}</div>
+                <div class="topic-meta">Started by ${username}</div>
+              </div>
+            </div>
+            <div class="topic-right">
+              <div class="topic-replies">${replyCount} replies</div>
+              <div class="topic-date">${date}</div>
+            </div>
+          </div>
+        `;
+      }
+    }
+  } catch (e) {
+    console.error("Load forum error:", e);
+  }
 }
 
-// ===== LOGIN =====
-window.doLogin = async () => {
+// ===== VIEW THREAD =====
+window.viewThread = async function(postId, title, author, date) {
+  currentThreadId = postId;
+  
   try {
-    await signInWithEmailAndPassword(auth, document.getElementById("loginEmail").value, document.getElementById("loginPassword").value);
-    location.href = "forum.html";
+    const postDoc = await getDoc(doc(db, "posts", postId));
+    if (!postDoc.exists()) {
+      alert("Post not found");
+      return;
+    }
+    
+    currentThreadData = postDoc.data();
+    
+    document.getElementById("threadTitle").textContent = title;
+    document.getElementById("threadMeta").textContent = `by ${author} • ${date}`;
+    
+    // Show status if closed
+    const statusEl = document.getElementById("threadStatus");
+    if (currentThreadData.closed) {
+      statusEl.textContent = "🔒 This topic is closed";
+    } else {
+      statusEl.textContent = "";
+    }
+    
+    // Show original post
+    const originalPost = document.getElementById("originalPost");
+    originalPost.innerHTML = `
+      <div style="display:flex; gap:12px; align-items:center; margin-bottom:8px;">
+        <img class="reply-avatar" src="${currentThreadData.avatar || 'https://www.gravatar.com/avatar/?d=mp&s=48'}" alt="avatar">
+        <div style="color: #93c5fd; font-weight: 600; font-size: 12px;">${author}</div>
+      </div>
+      <div style="color: #cbd5e1; font-size: 13px;">${currentThreadData.content}</div>
+      ${isAdmin ? `<div class="admin-controls">
+        <button class="admin-btn" onclick="togglePin('${postId}')">📌 ${currentThreadData.pinned ? 'Unpin' : 'Pin'}</button>
+        <button class="admin-btn" onclick="toggleClosed('${postId}')">🔒 ${currentThreadData.closed ? 'Open' : 'Close'}</button>
+        <button class="admin-btn" onclick="renameThread('${postId}')">✏️ Rename</button>
+        <button class="admin-btn danger" onclick="deleteThread('${postId}')">🗑️ Delete</button>
+      </div>` : ''}
+    `;
+    
+    document.getElementById("forum-tab").style.display = "none";
+    document.getElementById("thread-view").classList.add("active");
+    
+    await loadThreadReplies(postId);
   } catch (e) {
-    console.error('Login error:', e);
-    alert("Login error: " + e.message);
+    console.error("Error viewing thread:", e);
+    alert("Failed to load thread");
   }
 };
 
-// ===== REGISTER =====
-window.doRegister = async () => {
+// ===== BACK TO FORUM =====
+window.backToForum = function() {
+  currentThreadId = null;
+  document.getElementById("forum-tab").style.display = "block";
+  document.getElementById("thread-view").classList.remove("active");
+  document.getElementById("replyInput").value = "";
+};
+
+// ===== LOAD THREAD REPLIES =====
+async function loadThreadReplies(postId) {
   try {
-    const username = document.getElementById("username").value.trim();
-    const mail = document.getElementById("regEmail").value;
-    const pass = document.getElementById("regPassword").value;
+    const repliesSnap = await getDocs(query(collection(db, `posts/${postId}/replies`), orderBy("createdAt", "asc")));
+    const repliesContainer = document.getElementById("repliesContainer");
+    repliesContainer.innerHTML = "";
 
-    if (!/^[a-zA-Z0-9_]{3,20}$/.test(username)) {
-      alert("Invalid username (3-20 chars: a-z A-Z 0-9 _)");
-      return;
-    }
+    repliesSnap.forEach(replyDoc => {
+      const reply = replyDoc.data();
+      const username = reply.username || reply.author || "Anonymous";
+      const date = reply.createdAt ? new Date(reply.createdAt.toDate()).toLocaleString() : "Unknown";
+      const avatar = reply.avatar || 'https://www.gravatar.com/avatar/?d=mp&s=48';
+      
+      repliesContainer.innerHTML += `
+        <div class="reply-item">
+          <div style="display:flex; gap:8px; align-items:flex-start">
+            <img class="reply-avatar" src="${avatar}" alt="avatar">
+            <div style="flex:1">
+              <div class="reply-author">${username}</div>
+              <div class="reply-date">${date}</div>
+              <div class="reply-text">${reply.text}</div>
+            </div>
+          </div>
+        </div>
+      `;
+    });
+  } catch (e) {
+    console.error("Load replies error:", e);
+  }
+}
 
-    // 🔐 INVITE CHECK
-    if (invitesEnabled) {
-      const code = document.getElementById("invite").value.trim();
-      const inviteRef = doc(db, "invites", code);
-      const snap = await getDoc(inviteRef);
+// ===== PUBLISH REPLY =====
+window.publishReply = async function() {
+  const input = document.getElementById("replyInput");
+  const text = input.value.trim();
 
-      if (!snap.exists() || snap.data().used) {
-        alert("Invalid invite");
-        return;
-      }
+  if (!text) {
+    alert("Reply cannot be empty");
+    return;
+  }
 
-      const cred = await createUserWithEmailAndPassword(auth, mail, pass);
+  if (!currentThreadId) return;
+  
+  if (currentThreadData && currentThreadData.closed && !isAdmin) {
+    alert("This thread is closed");
+    return;
+  }
 
-      await setDoc(doc(db, "users", cred.user.uid), {
-        username,
-        email: mail,
-        role: "user",
-        createdAt: Date.now()
-      });
+  try {
+    const userDoc = await getDoc(doc(db, "users", currentUser.uid));
+    const username = userDoc.exists() ? userDoc.data().username : currentUser.email.split("@")[0];
 
-      await setDoc(inviteRef, {
-        ...snap.data(),
-        used: true,
-        usedBy: cred.user.uid
-      });
+    const avatar = userDoc.exists() ? userDoc.data().avatar || null : null;
 
-      location.href = "forum.html";
-      return;
-    }
-
-    // ❌ INVITES OFF
-    const cred = await createUserWithEmailAndPassword(auth, mail, pass);
-    await setDoc(doc(db, "users", cred.user.uid), {
+    await addDoc(collection(db, `posts/${currentThreadId}/replies`), {
+      text,
+      author: currentUser.email.split("@")[0],
       username,
-      email: mail,
-      role: "user",
-      createdAt: Date.now()
+      avatar: avatar,
+      createdAt: serverTimestamp()
+    });
+    input.value = "";
+    await loadThreadReplies(currentThreadId);
+  } catch (e) {
+    console.error("Publish reply error:", e);
+    alert("Failed to publish reply");
+  }
+};
+
+// ===== PUBLISH POST =====
+window.publishPost = async () => {
+  const title = document.getElementById("postTitle").value.trim();
+  const content = document.getElementById("postContent").value.trim();
+
+  if (!title || !content) {
+    alert("Title and content are required");
+    return;
+  }
+
+  try {
+    const userDoc = await getDoc(doc(db, "users", currentUser.uid));
+    const username = userDoc.exists() ? userDoc.data().username : currentUser.email.split("@")[0];
+
+    const avatar = userDoc.exists() ? userDoc.data().avatar || null : null;
+
+    await addDoc(collection(db, "posts"), {
+      title,
+      content,
+      author: currentUser.email.split("@")[0],
+      username,
+      avatar: avatar,
+      createdAt: serverTimestamp()
+    });
+    document.getElementById("postTitle").value = "";
+    document.getElementById("postContent").value = "";
+    loadForum();
+  } catch (e) {
+    console.error("Publish error:", e);
+    alert("Failed to publish post");
+  }
+};
+
+// ===== LOAD CHAT =====
+async function loadChat() {
+  try {
+    const messagesSnap = await getDocs(collection(db, "messages"));
+    const chatMessages = document.getElementById("chatMessages");
+    chatMessages.innerHTML = "";
+
+    // Сортируем по дате в коде
+    const msgs = messagesSnap.docs.map(d => d.data()).sort((a, b) => {
+      const timeA = a.createdAt?.toDate?.() || new Date(0);
+      const timeB = b.createdAt?.toDate?.() || new Date(0);
+      return timeA - timeB;
+    });
+    
+    msgs.forEach(msg => {
+      const username = msg.username || msg.author || "Unknown";
+      chatMessages.innerHTML += `
+        <div class="chat-message">
+          <div class="chat-message-author">${username}:</div>
+          <div class="chat-message-text">${msg.text || ""}</div>
+        </div>
+      `;
     });
 
-    location.href = "forum.html";
+    // Auto-scroll to bottom
+    chatMessages.scrollTop = chatMessages.scrollHeight;
   } catch (e) {
-    console.error('Register error:', e);
-    alert("Register error: " + e.message);
+    console.error("Load chat error:", e);
   }
+}
+
+// ===== COINS & DAILY BONUS =====
+async function refreshCoinDisplay() {
+  try {
+    const udoc = await getDoc(doc(db, 'users', currentUser.uid));
+    const coins = udoc.exists() ? (udoc.data().avidcoin || 0) : 0;
+    document.getElementById('coinBal').textContent = coins + ' ⧫';
+  } catch (e) {
+    console.error('Refresh coins error', e);
+  }
+}
+
+window.claimDaily = async function() {
+  try {
+    const uref = doc(db, 'users', currentUser.uid);
+    const udoc = await getDoc(uref);
+    if (!udoc.exists()) { alert('User doc missing'); return; }
+    const data = udoc.data();
+    const last = data.lastDailyClaim ? data.lastDailyClaim.toDate() : new Date(0);
+    const now = new Date();
+    if ((now - last) < 24 * 60 * 60 * 1000) { alert('You already claimed today'); return; }
+    const amount = 10; // fixed daily reward
+    await updateDoc(uref, { avidcoin: increment(amount), lastDailyClaim: serverTimestamp() });
+    alert('You received ' + amount + ' ⧫');
+    refreshCoinDisplay();
+  } catch (e) {
+    console.error('Daily claim error', e);
+    alert('Failed to claim daily');
+  }
+}
+
+// ===== SHOP FUNCTIONS =====
+async function loadShop() {
+  try {
+    const shopSnap = await getDocs(query(collection(db, 'shopItems'), orderBy('createdAt', 'desc'), limit(200)));
+    const el = document.getElementById('shopList');
+    el.innerHTML = '';
+    shopSnap.forEach(docSnap => {
+      const it = docSnap.data();
+      const html = `
+        <div class="topic" style="cursor:default">
+          <div class="topic-left">
+            <div>
+              <div class="topic-title">${it.title} — ${it.price} ⧫</div>
+              <div class="topic-meta">Seller: ${it.sellerName || 'Unknown'}</div>
+            </div>
+          </div>
+          <div class="topic-right">
+            <button onclick="buyItem('${docSnap.id}', ${it.price}, '${it.sellerUid}')">Buy</button>
+          </div>
+        </div>
+      `;
+      el.innerHTML += html;
+    });
+  } catch (e) {
+    console.error('Load shop error', e);
+  }
+}
+
+window.createListing = async function() {
+  const title = document.getElementById('itemTitle').value.trim();
+  const desc = document.getElementById('itemDesc').value.trim();
+  const price = parseInt(document.getElementById('itemPrice').value, 10);
+  if (!title || !price || price <= 0) { alert('Title and positive price required'); return; }
+  try {
+    const udoc = await getDoc(doc(db, 'users', currentUser.uid));
+    const sellerName = udoc.exists() ? (udoc.data().username || currentUser.email.split('@')[0]) : currentUser.email.split('@')[0];
+    await addDoc(collection(db, 'shopItems'), {
+      title, description: desc, price, sellerUid: currentUser.uid, sellerName, createdAt: serverTimestamp()
+    });
+    document.getElementById('itemTitle').value = '';
+    document.getElementById('itemDesc').value = '';
+    document.getElementById('itemPrice').value = '';
+    loadShop();
+  } catch (e) {
+    console.error('Create listing error', e);
+    alert('Failed to create listing');
+  }
+}
+
+async function buyItem(itemId, price, sellerUid) {
+  if (!confirm('Buy this item for ' + price + ' ⧫ ?')) return;
+  try {
+    const buyerRef = doc(db, 'users', currentUser.uid);
+    const sellerRef = doc(db, 'users', sellerUid);
+    const itemRef = doc(db, 'shopItems', itemId);
+    await runTransaction(db, async (tx) => {
+      const buyerDoc = await tx.get(buyerRef);
+      if (!buyerDoc.exists()) throw 'Buyer doc missing';
+      const buyerCoins = buyerDoc.data().avidcoin || 0;
+      if (buyerCoins < price) throw 'Insufficient coins';
+      const sellerDoc = await tx.get(sellerRef);
+      if (!sellerDoc.exists()) throw 'Seller doc missing';
+      // transfer
+      tx.update(buyerRef, { avidcoin: increment(-price) });
+      tx.update(sellerRef, { avidcoin: increment(price) });
+      tx.delete(itemRef);
+      await addDoc(collection(db, 'purchases'), { itemId, buyerUid: currentUser.uid, sellerUid, price, createdAt: serverTimestamp() });
+    });
+    alert('Purchase successful');
+    loadShop();
+    refreshCoinDisplay();
+  } catch (e) {
+    console.error('Buy item error', e);
+    alert('Buy failed: ' + (e.message || e));
+  }
+}
+
+// ===== CASINO =====
+window.spinCasino = async function() {
+  const bet = parseInt(document.getElementById('betAmount').value, 10);
+  if (!bet || bet <= 0) { alert('Enter bet'); return; }
+  // Determine chance and multiplier based on bet size
+  let chance = 70;
+  let mult = 1.2;
+  if (bet <= 50) {
+    chance = 70; mult = 1.2;
+  } else if (bet <= 200) {
+    chance = 60; mult = 1.5;
+  } else {
+    chance = 50; mult = 2.0;
+  }
+  try {
+    // check coins and apply spin atomically
+    const userRef = doc(db, 'users', currentUser.uid);
+    const res = await runTransaction(db, async (tx) => {
+      const udoc = await tx.get(userRef);
+      if (!udoc.exists()) throw 'User doc missing';
+      const coins = udoc.data().avidcoin || 0;
+      if (coins < bet) throw 'Insufficient coins';
+      // determine outcome
+      const win = Math.random() < (chance/100);
+      let net = 0;
+      if (win) net = Math.floor(bet * mult);
+      else net = -bet;
+      tx.update(userRef, { avidcoin: increment(net) });
+      return { win, net };
+    });
+    document.getElementById('casinoResult').textContent = res.win ? `You won ${res.net} ⧫ (chance ${chance}%)` : `You lost ${-res.net} ⧫ (chance ${chance}%)`;
+    refreshCoinDisplay();
+  } catch (e) {
+    console.error('Casino error', e);
+    alert('Spin failed: ' + (e.message || e));
+  }
+}
+
+
+// ===== SEND MESSAGE =====
+window.sendMessage = async () => {
+  const input = document.getElementById("chatInput");
+  const text = input.value.trim();
+
+  if (!text) return;
+
+  try {
+    // Get current user's username
+    const userDoc = await getDoc(doc(db, "users", currentUser.uid));
+    const username = userDoc.exists() ? userDoc.data().username : currentUser.email.split("@")[0];
+
+    await addDoc(collection(db, "messages"), {
+      author: currentUser.email.split("@")[0],
+      username,
+      text,
+      createdAt: serverTimestamp()
+    });
+    input.value = "";
+    loadChat();
+  } catch (e) {
+    console.error("Send message error:", e);
+    alert("Failed to send message");
+  }
+};
+
+// ===== ADMIN: PIN/UNPIN =====
+window.togglePin = async function(postId) {
+  if (!isAdmin) return;
+  try {
+    await updateDoc(doc(db, "posts", postId), {
+      pinned: !currentThreadData.pinned
+    });
+    currentThreadData.pinned = !currentThreadData.pinned;
+    await viewThread(postId, currentThreadData.title, currentThreadData.username, new Date(currentThreadData.createdAt.toDate()).toLocaleDateString());
+  } catch (e) {
+    console.error("Error pinning:", e);
+    alert("Failed to update pin status");
+  }
+};
+
+// ===== ADMIN: CLOSE/OPEN =====
+window.toggleClosed = async function(postId) {
+  if (!isAdmin) return;
+  try {
+    await updateDoc(doc(db, "posts", postId), {
+      closed: !currentThreadData.closed
+    });
+    currentThreadData.closed = !currentThreadData.closed;
+    await viewThread(postId, currentThreadData.title, currentThreadData.username, new Date(currentThreadData.createdAt.toDate()).toLocaleDateString());
+  } catch (e) {
+    console.error("Error closing:", e);
+    alert("Failed to update status");
+  }
+};
+
+// ===== ADMIN: RENAME =====
+window.renameThread = async function(postId) {
+  if (!isAdmin) return;
+  const newTitle = prompt("Enter new title:", currentThreadData.title);
+  if (!newTitle) return;
+  
+  try {
+    await updateDoc(doc(db, "posts", postId), {
+      title: newTitle
+    });
+    currentThreadData.title = newTitle;
+    document.getElementById("threadTitle").textContent = newTitle;
+    loadForum();
+  } catch (e) {
+    console.error("Error renaming:", e);
+    alert("Failed to rename thread");
+  }
+};
+
+// ===== ADMIN: DELETE =====
+window.deleteThread = async function(postId) {
+  if (!isAdmin) return;
+  if (!confirm("Are you sure you want to delete this thread and all replies?")) return;
+  
+  try {
+    // Delete all replies
+    const repliesSnap = await getDocs(collection(db, `posts/${postId}/replies`));
+    for (const replyDoc of repliesSnap.docs) {
+      await deleteDoc(replyDoc.ref);
+    }
+    
+    // Delete post
+    await deleteDoc(doc(db, "posts", postId));
+    
+    backToForum();
+    loadForum();
+  } catch (e) {
+    console.error("Error deleting:", e);
+    alert("Failed to delete thread");
+  }
+};
+
+// ===== LOGOUT =====
+window.logout = async () => {
+  await signOut(auth);
+  location.href = "index.html";
 };
 </script>
 
