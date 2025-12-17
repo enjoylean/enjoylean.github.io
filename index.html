@@ -2,14 +2,27 @@
 <html lang="ru">
 <head>
   <meta charset="UTF-8">
-  <title>Avidware – Login</title>
+  <title>Avidware</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <style>
-    body { background:#020617; color:#e5e7eb; font-family:Arial; display:flex; justify-content:center; align-items:center; height:100vh }
-    .card { background:#0f172a; padding:20px; border-radius:12px; width:320px }
-    input, button { width:100%; margin-top:10px; padding:10px; border-radius:8px; border:none }
-    input { background:#020617; color:#fff; border:1px solid #334155 }
-    button { background:#2563eb; color:#fff; cursor:pointer }
+    body {
+      background:#020617; color:#e5e7eb; font-family:Arial;
+      display:flex; justify-content:center; align-items:center; height:100vh;
+    }
+    .card {
+      background:#0f172a; padding:20px; border-radius:12px; width:340px;
+    }
+    input, button {
+      width:100%; margin-top:10px; padding:10px;
+      border-radius:8px; border:none;
+    }
+    input {
+      background:#020617; color:#fff; border:1px solid #334155;
+    }
+    button {
+      background:#2563eb; color:#fff; cursor:pointer;
+    }
+    hr { margin:15px 0; border-color:#334155 }
     .hidden { display:none }
   </style>
 </head>
@@ -17,25 +30,35 @@
 
 <div class="card">
   <h2>Login</h2>
-  <input id="email" placeholder="Email">
-  <input id="password" type="password" placeholder="Password">
-  <button onclick="login()">Login</button>
+  <input id="loginEmail" placeholder="Email">
+  <input id="loginPassword" type="password" placeholder="Password">
+  <button id="loginBtn">Login</button>
 
-  <hr style="margin:15px 0">
+  <hr>
 
   <h2>Register</h2>
   <input id="username" placeholder="Username">
   <input id="regEmail" placeholder="Email">
   <input id="regPassword" type="password" placeholder="Password">
   <input id="invite" placeholder="Invite code" class="hidden">
-  <button onclick="register()">Register</button>
+  <button id="registerBtn">Register</button>
 </div>
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-import { getFirestore, doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+import {
+  getAuth,
+  signInWithEmailAndPassword,
+  createUserWithEmailAndPassword
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+import {
+  getFirestore,
+  doc,
+  getDoc,
+  setDoc
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
+/* ===== FIREBASE CONFIG ===== */
 const firebaseConfig = {
   apiKey: "AIzaSyCIXJyovY1P0fvoEexAApCesqiTphA_mTk",
   authDomain: "avidware.firebaseapp.com",
@@ -49,73 +72,80 @@ const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
 
+/* ===== INVITE CONFIG ===== */
 let invitesEnabled = false;
 
-// 🔥 ЗАГРУЗКА КОНФИГА
-const cfgSnap = await getDoc(doc(db, "config", "site"));
-if (cfgSnap.exists() && cfgSnap.data().invitesEnabled === true) {
-  invitesEnabled = true;
-  document.getElementById("invite").classList.remove("hidden");
+try {
+  const cfg = await getDoc(doc(db, "config", "site"));
+  if (cfg.exists() && cfg.data().invitesEnabled === true) {
+    invitesEnabled = true;
+    document.getElementById("invite").classList.remove("hidden");
+  }
+} catch (e) {
+  console.warn("Config not found, invites OFF");
 }
 
-// LOGIN
-window.login = async () => {
-  await signInWithEmailAndPassword(auth, email.value, password.value);
-  location.href = "forum.html";
-};
-
-// REGISTER
-window.register = async () => {
-  const username = document.getElementById("username").value.trim();
-  const mail = regEmail.value;
-  const pass = regPassword.value;
-
-  if (!/^[a-zA-Z0-9_]{3,20}$/.test(username)) {
-    alert("Invalid username");
-    return;
+/* ===== LOGIN ===== */
+document.getElementById("loginBtn").addEventListener("click", async () => {
+  try {
+    await signInWithEmailAndPassword(
+      auth,
+      loginEmail.value,
+      loginPassword.value
+    );
+    location.href = "forum.html";
+  } catch (e) {
+    alert(e.message);
   }
+});
 
-  // 🔐 INVITE CHECK
-  if (invitesEnabled) {
-    const code = invite.value.trim();
-    const inviteRef = doc(db, "invites", code);
-    const snap = await getDoc(inviteRef);
+/* ===== REGISTER ===== */
+document.getElementById("registerBtn").addEventListener("click", async () => {
+  try {
+    const username = document.getElementById("username").value.trim();
+    const email = regEmail.value;
+    const pass = regPassword.value;
 
-    if (!snap.exists() || snap.data().used) {
-      alert("Invalid invite");
+    if (!/^[a-zA-Z0-9_]{3,20}$/.test(username)) {
+      alert("Username: a-z A-Z 0-9 _ (3–20)");
       return;
     }
 
-    const cred = await createUserWithEmailAndPassword(auth, mail, pass);
+    let inviteRef = null;
+
+    if (invitesEnabled) {
+      const code = invite.value.trim();
+      inviteRef = doc(db, "invites", code);
+      const snap = await getDoc(inviteRef);
+
+      if (!snap.exists() || snap.data().used) {
+        alert("Invalid invite");
+        return;
+      }
+    }
+
+    const cred = await createUserWithEmailAndPassword(auth, email, pass);
 
     await setDoc(doc(db, "users", cred.user.uid), {
       username,
-      email: mail,
+      email,
       role: "user",
       createdAt: Date.now()
     });
 
-    await setDoc(inviteRef, {
-      ...snap.data(),
-      used: true,
-      usedBy: cred.user.uid
-    });
+    if (invitesEnabled && inviteRef) {
+      await setDoc(inviteRef, {
+        ...(await getDoc(inviteRef)).data(),
+        used: true,
+        usedBy: cred.user.uid
+      });
+    }
 
     location.href = "forum.html";
-    return;
+  } catch (e) {
+    alert(e.message);
   }
-
-  // ❌ INVITES OFF
-  const cred = await createUserWithEmailAndPassword(auth, mail, pass);
-  await setDoc(doc(db, "users", cred.user.uid), {
-    username,
-    email: mail,
-    role: "user",
-    createdAt: Date.now()
-  });
-
-  location.href = "forum.html";
-};
+});
 </script>
 
 </body>
