@@ -73,28 +73,15 @@
     }
 
     .topic {
-      padding: 12px;
-      margin-bottom: 8px;
-      background: rgba(10, 4, 21, 0.3);
+      padding: 14px;
+      margin-bottom: 10px;
+      background: rgba(10, 4, 21, 0.4);
       border-radius: 8px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
       cursor: pointer;
       transition: background 0.2s;
+      border-left: 3px solid rgba(157, 78, 221, 0.4);
     }
-    .topic:hover { background: rgba(157, 78, 221, 0.1); }
-
-    .topic-left { flex: 1; }
-    .topic-title { color: #93c5fd; font-weight: 600; margin-bottom: 4px; }
-    .topic-meta { font-size: 12px; color: #94a3b8; }
-
-    .topic-right {
-      text-align: right;
-      font-size: 12px;
-      color: #cbd5e1;
-    }
-    .topic-date { color: #64748b; }
+    .topic:hover { background: rgba(157, 78, 221, 0.08); border-left-color: rgba(157, 78, 221, 0.8); }
 
     /* CHAT SECTION */
     .chat-container {
@@ -235,16 +222,18 @@
 
       <!-- FORUM TAB -->
       <div id="forum-tab" class="tab-content">
-        <!-- GENERAL SECTION -->
+        <!-- CREATE POST SECTION -->
         <div class="forum-section">
-          <div class="section-title">General</div>
-          <div id="generalTopics"></div>
+          <div class="section-title">Create Post</div>
+          <input id="postTitle" placeholder="Post title..." style="width:100%; margin-top:10px; padding:10px 12px; border-radius:6px; background:rgba(2,6,23,0.55); color:#fff; border:1px solid rgba(115,125,150,0.12);">
+          <textarea id="postContent" placeholder="Write your message..." style="width:100%; margin-top:10px; padding:10px 12px; border-radius:6px; background:rgba(2,6,23,0.55); color:#fff; border:1px solid rgba(115,125,150,0.12); min-height:80px; resize:vertical;"></textarea>
+          <button onclick="publishPost()" style="width:100%; margin-top:10px; padding:10px 12px; border-radius:6px; background:linear-gradient(90deg,#8b63ff,#5b21b6); color:#fff; border:none; cursor:pointer; font-weight:600;">Publish</button>
         </div>
 
-        <!-- PREMIUM SECTION -->
+        <!-- POSTS SECTION -->
         <div class="forum-section">
-          <div class="section-title">Premium Lounge</div>
-          <div id="premiumTopics"></div>
+          <div class="section-title">Recent Posts</div>
+          <div id="generalTopics"></div>
         </div>
       </div>
 
@@ -317,6 +306,9 @@ onAuthStateChanged(auth, (user) => {
   document.getElementById("currentUser").textContent = user.email.split("@")[0] || user.email;
   loadForum();
   loadChat();
+  
+  // Auto-reload chat every 2 seconds
+  setInterval(loadChat, 2000);
 });
 
 // ===== TAB SWITCH =====
@@ -330,8 +322,7 @@ window.switchTab = function(tab, btn) {
 // ===== LOAD FORUM =====
 async function loadForum() {
   try {
-    // Load General topics
-    const generalSnap = await getDocs(query(collection(db, "posts"), orderBy("createdAt", "desc"), limit(10)));
+    const generalSnap = await getDocs(query(collection(db, "posts"), orderBy("createdAt", "desc"), limit(20)));
     const generalTopics = document.getElementById("generalTopics");
     generalTopics.innerHTML = "";
 
@@ -345,22 +336,43 @@ async function loadForum() {
           <div class="topic">
             <div class="topic-left">
               <div class="topic-title">${post.title || "Untitled"}</div>
-              <div class="topic-meta">by ${post.author || "Anonymous"}</div>
-            </div>
-            <div class="topic-right">
-              <div class="topic-date">${date}</div>
+              <div class="topic-meta">by ${post.author || "Anonymous"} • ${date}</div>
+              <div style="color: #cbd5e1; margin-top: 6px; font-size: 13px;">${post.content || ""}</div>
             </div>
           </div>
         `;
       });
     }
-
-    // Premium topics (empty for now)
-    document.getElementById("premiumTopics").innerHTML = '<div style="color: #94a3b8; padding: 12px;">Premium content coming soon...</div>';
   } catch (e) {
     console.error("Load forum error:", e);
   }
 }
+
+// ===== PUBLISH POST =====
+window.publishPost = async () => {
+  const title = document.getElementById("postTitle").value.trim();
+  const content = document.getElementById("postContent").value.trim();
+
+  if (!title || !content) {
+    alert("Title and content are required");
+    return;
+  }
+
+  try {
+    await addDoc(collection(db, "posts"), {
+      title,
+      content,
+      author: currentUser.email.split("@")[0],
+      createdAt: serverTimestamp()
+    });
+    document.getElementById("postTitle").value = "";
+    document.getElementById("postContent").value = "";
+    loadForum();
+  } catch (e) {
+    console.error("Publish error:", e);
+    alert("Failed to publish post");
+  }
+};
 
 // ===== LOAD CHAT =====
 async function loadChat() {
