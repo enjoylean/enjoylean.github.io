@@ -74,7 +74,7 @@ onAuthStateChanged(auth, async user => {
   document.getElementById("profileLink").innerText = username;
   document.getElementById("profileLink").href = `profile.html?u=${username}`;
 
-  loadPosts();
+  try { loadPosts(); } catch (e) { console.error('loadPosts error', e); }
 });
 
 window.createPost = async () => {
