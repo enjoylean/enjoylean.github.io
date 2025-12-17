@@ -251,6 +251,13 @@
       .topic { flex-direction: column; align-items: flex-start; }
       .topic-right { margin-top: 8px; }
     }
+    /* Wheel & pointer animations */
+    #wheel { transform-origin: 50% 50%; will-change: transform; }
+    #wheel.spinning { box-shadow: 0 12px 40px rgba(92,33,182,0.35), inset 0 -6px 40px rgba(0,0,0,0.6); animation: wheelGlow 0.8s infinite alternate; }
+    @keyframes wheelGlow { from { filter: drop-shadow(0 6px 12px rgba(99,102,241,0.06)); } to { filter: drop-shadow(0 20px 40px rgba(99,102,241,0.14)); } }
+    #pointer { transform-origin: center top; }
+    #pointer.spin-pointer { animation: pointerWobble 0.12s infinite linear; }
+    @keyframes pointerWobble { 0% { transform: translateY(-6px) rotate(-6deg); } 50% { transform: translateY(-6px) rotate(6deg); } 100% { transform: translateY(-6px) rotate(-6deg); } }
   </style>
 </head>
 <body>
@@ -795,14 +802,17 @@ window.spinCasino = async function() {
   const wheel = document.getElementById('wheel');
   const spinBtn = document.getElementById('spinBtn');
   const resultEl = document.getElementById('casinoResult');
+  const pointer = document.getElementById('pointer');
   // set CSS variable for win angle
   const winDeg = chance * 3.6; // percent -> degrees
   wheel.style.setProperty('--win-deg', winDeg + 'deg');
 
-  // disable controls while spinning
+  // disable controls while spinning and add spinning visuals
   spinBtn.disabled = true;
   document.getElementById('betAmount').disabled = true;
   resultEl.textContent = 'Spinning...';
+  wheel.classList.add('spinning');
+  if (pointer) pointer.classList.add('spin-pointer');
 
   // compute rotation: several full spins plus random angle
   const fullSpins = 6;
@@ -845,6 +855,8 @@ window.spinCasino = async function() {
     // re-enable
     spinBtn.disabled = false;
     document.getElementById('betAmount').disabled = false;
+    wheel.classList.remove('spinning');
+    if (pointer) pointer.classList.remove('spin-pointer');
     refreshCoinDisplay();
     // reset wheel slowly to avoid jump next spin
     setTimeout(() => {
