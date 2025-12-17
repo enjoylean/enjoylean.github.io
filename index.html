@@ -1,121 +1,37 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-  <meta charset="UTF-8">
-  <title>Avidware</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <title>Profile</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <link href="https://fonts.googleapis.com/css2?family=Lexend+Giga:wght@700&display=swap" rel="stylesheet">
   <style>
-    body {
-      background:#0a0415; color:#e5e7eb; font-family:Inter, Arial, sans-serif;
-      display:flex; justify-content:center; align-items:center; height:100vh;
-      margin:0; overflow:hidden;
-    }
-
-    /* splash / logo */
-    .splash {
-      position:fixed; inset:0;
-      background:linear-gradient(135deg, #0a0415 0%, #1a0033 100%);
-      display:flex; justify-content:center; align-items:center;
-      z-index:9999; pointer-events:none;
-      animation:splashFade 3.6s ease-in-out forwards;
-    }
-
-    @keyframes splashFade { 0%{opacity:1} 60%{opacity:1} 100%{opacity:0} }
-
-    .logo-text { font-size:56px; font-weight:700; letter-spacing:6px; display:flex; gap:6px; font-family:'Lexend Giga', sans-serif; }
-    .logo-char { background:linear-gradient(90deg,#fff 0%,#e9ddff 50%,#9d4edd 100%); -webkit-background-clip:text; background-clip:text; -webkit-text-fill-color:transparent; text-shadow:0 0 28px rgba(157,78,221,0.8); transform:translateY(36px); opacity:0; animation:charSlideIn .56s cubic-bezier(.2,.9,.2,1) forwards; }
-
-    @keyframes charSlideIn { from{opacity:0; transform:translateY(36px)} to{opacity:1; transform:translateY(0)} }
-    .logo-char:nth-child(1){animation-delay:.08s} .logo-char:nth-child(2){animation-delay:.16s} .logo-char:nth-child(3){animation-delay:.24s}
-    .logo-char:nth-child(4){animation-delay:.32s} .logo-char:nth-child(5){animation-delay:.40s} .logo-char:nth-child(6){animation-delay:.48s}
-    .logo-char:nth-child(7){animation-delay:.56s} .logo-char:nth-child(8){animation-delay:.64s} .logo-char:nth-child(9){animation-delay:.72s}
-    .logo-char:nth-child(10){animation-delay:.80s} .logo-char:nth-child(11){animation-delay:.88s} .logo-char:nth-child(12){animation-delay:.96s}
-    .logo-char:nth-child(13){animation-delay:1.04s}
-
-    /* card + ambient glow */
-    .card { position:relative; background:rgba(15,23,42,0.6); padding:22px; border-radius:14px; width:360px; color:var(--fg,#e5e7eb); backdrop-filter:blur(6px) saturate(1.1); box-shadow: 0 10px 30px rgba(10,2,30,0.6); transform:translateY(0); opacity:0; animation:cardAppear .6s ease-in .9s forwards; }
-    .card::before { content:""; position:absolute; inset:-40px; background:radial-gradient(closest-side, rgba(157,78,221,0.18), transparent 40%); filter:blur(30px); z-index:-1; pointer-events:none; border-radius:18px; }
-
-    @keyframes cardAppear { from{opacity:0; transform:translateY(12px)} to{opacity:1; transform:translateY(0)} }
-
-    .tabs { display:flex; gap:10px; margin-bottom:18px; }
-    .tab-btn { flex:1; padding:10px; border-radius:999px; border:none; background:transparent; color:#cbd5e1; cursor:pointer; transition:all .28s; font-weight:600 }
-    .tab-btn.active { background:linear-gradient(90deg,#2b3650,#1f2a44); color:#fff; box-shadow:0 6px 16px rgba(45,40,80,0.25) }
-
-    .form-section { display:none; opacity:0; transform:translateY(12px); transition:opacity .28s, transform .28s }
-    .form-section.active { display:block; opacity:1; transform:translateY(0) }
-
-    .info-text { font-size:13px; color:#bfc9db; margin-top:12px; padding:10px 12px; background:linear-gradient(90deg, rgba(10,4,21,0.4), rgba(10,4,21,0.2)); border-radius:10px; border-left:3px solid rgba(157,78,221,0.7) }
-
-    input, button { width:100%; margin-top:10px; padding:12px 14px; border-radius:10px; box-sizing:border-box }
-    input { background:rgba(2,6,23,0.55); color:#fff; border:1px solid rgba(115,125,150,0.12); transition:box-shadow .18s, border-color .18s, transform .18s }
-    input:focus { outline:none; border-color:rgba(157,78,221,0.8); box-shadow:0 6px 18px rgba(157,78,221,0.12); transform:translateY(-2px) }
-
-    button { background:linear-gradient(90deg,#8b63ff,#5b21b6); color:#fff; border:none; font-weight:700; cursor:pointer; transition:transform .12s ease, box-shadow .12s }
-    button:active { transform:translateY(1px) }
-    button:hover { box-shadow:0 12px 30px rgba(92,33,182,0.18) }
-
-    .hidden{display:none}
+    body { margin:0; padding:28px; min-height:100vh; display:flex; align-items:center; justify-content:center; background:linear-gradient(180deg,#0a0415 0%,#120428 60%); color:#e5e7eb; font-family:'Lexend Giga', Inter, Arial, sans-serif }
+    .card { width:100%; max-width:700px; background:rgba(6,8,20,0.55); padding:28px; border-radius:14px; box-shadow:0 18px 50px rgba(10,6,40,0.6); backdrop-filter:blur(6px); position:relative }
+    .card::before { content:""; position:absolute; inset:-30px; background:radial-gradient(closest-side, rgba(157,78,221,0.12), transparent 35%); filter:blur(30px); z-index:-1; border-radius:20px }
+    h2 { margin:0 0 8px 0; font-size:28px }
+    input, textarea, button { width:100%; margin-top:12px; padding:12px 14px; border-radius:12px; box-sizing:border-box }
+    input, textarea { background:rgba(2,6,23,0.5); color:#fff; border:1px solid rgba(115,125,150,0.08); transition:box-shadow .16s, border-color .16s }
+    input:focus, textarea:focus { outline:none; border-color:rgba(157,78,221,0.9); box-shadow:0 10px 30px rgba(157,78,221,0.08) }
+    button { background:linear-gradient(90deg,#8b63ff,#5b21b6); color:#fff; border:none; font-weight:700; cursor:pointer }
+    .muted { color:#9aa6c0; font-size:14px; margin-top:6px }
   </style>
 </head>
 <body>
 
-<div class="splash">
-  <div class="logo-text" id="logoText"></div>
-</div>
-
 <div class="card">
-  <div class="tabs">
-    <button class="tab-btn active" onclick="switchTab('login')">Login</button>
-    <button class="tab-btn" onclick="switchTab('register')">Register</button>
-  </div>
+  <h2 id="username">Загрузка...</h2>
+  <div class="muted" id="email"></div>
 
-  <div id="login" class="form-section active">
-    <h2>Login</h2>
-    <input id="loginEmail" placeholder="Email">
-    <input id="loginPassword" type="password" placeholder="Password">
-    <button id="loginBtn">Login</button>
-  </div>
-
-  <div id="register" class="form-section">
-    <h2>Register</h2>
-    <input id="username" placeholder="Username">
-    <input id="regEmail" placeholder="Email">
-    <input id="regPassword" type="password" placeholder="Password">
-    <input id="invite" placeholder="Invite code" class="hidden">
-    <button id="registerBtn">Register</button>
-    <div class="info-text">
-      💡 Get invite: <a href="https://t.me/avidware" target="_blank" style="color:#93c5fd; text-decoration:none;">t.me/avidware</a>
-    </div>
-  </div>
+  <textarea id="bio" placeholder="О себе" rows="4" style="display:none"></textarea>
+  <button id="save" style="display:none" onclick="saveProfile()">Сохранить</button>
 </div>
 
 <script type="module">
-// ===== АНИМАЦИЯ БУКВ =====
-const text = "avidware.fun";
-const logoEl = document.getElementById("logoText");
-text.split("").forEach(char => {
-  const span = document.createElement("span");
-  span.className = "logo-char";
-  span.textContent = char;
-  logoEl.appendChild(span);
-});
-
-// ===== ПЕРЕКЛЮЧЕНИЕ ТАБОВ =====
-window.switchTab = function(tab) {
-  document.querySelectorAll(".form-section").forEach(el => el.classList.remove("active"));
-  document.querySelectorAll(".tab-btn").forEach(el => el.classList.remove("active"));
-  document.getElementById(tab).classList.add("active");
-  event.target.classList.add("active");
-};
-
-// ===== FIREBASE ИМПОРТЫ =====
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-import { getFirestore, doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+import { getFirestore, collection, query, where, getDocs, doc, updateDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
-// ===== FIREBASE CONFIG =====
 const firebaseConfig = {
   apiKey: "AIzaSyCIXJyovY1P0fvoEexAApCesqiTphA_mTk",
   authDomain: "avidware.firebaseapp.com",
@@ -129,79 +45,54 @@ const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
 
-// ===== INVITE CONFIG =====
-let invitesEnabled = false;
+const params = new URLSearchParams(location.search);
+const usernameParam = params.get("u");
 
-try {
-  const cfg = await getDoc(doc(db, "config", "site"));
-  if (cfg.exists() && cfg.data().invitesEnabled === true) {
-    invitesEnabled = true;
-    const inviteEl = document.getElementById("invite");
-    if (inviteEl) inviteEl.classList.remove("hidden");
+const usernameEl = document.getElementById("username");
+const emailEl = document.getElementById("email");
+const bioEl = document.getElementById("bio");
+const saveBtn = document.getElementById("save");
+
+let profileUid = null;
+
+// загрузка профиля
+const loadProfile = async () => {
+  const q = query(collection(db, "users"), where("username", "==", usernameParam));
+  const snap = await getDocs(q);
+
+  if (snap.empty) {
+    usernameEl.innerText = "Пользователь не найден";
+    return;
   }
-} catch (e) {
-  console.warn("Config not found, invites OFF");
-}
 
-// ===== LOGIN =====
-document.getElementById("loginBtn").addEventListener("click", async () => {
+  const docSnap = snap.docs[0];
+  const data = docSnap.data();
+  profileUid = docSnap.id;
+
+  usernameEl.innerText = data.username;
+  emailEl.innerText = data.email;
+  bioEl.value = data.bio || "";
+
+  onAuthStateChanged(auth, user => {
+    if (user && user.uid === profileUid) {
+      bioEl.style.display = "block";
+      saveBtn.style.display = "block";
+    }
+  });
+};
+
+window.saveProfile = async () => {
   try {
-    const email = document.getElementById("loginEmail").value;
-    const pass = document.getElementById("loginPassword").value;
-    await signInWithEmailAndPassword(auth, email, pass);
-    location.href = "forum.html";
+    await updateDoc(doc(db, "users", profileUid), { bio: bioEl.value });
+    alert("Сохранено");
   } catch (e) {
-    alert(e.message);
+    console.error('Save profile error', e);
+    alert((e.code ? e.code + ': ' : '') + e.message);
   }
-});
+};
 
-// ===== REGISTER =====
-document.getElementById("registerBtn").addEventListener("click", async () => {
-  try {
-    const username = document.getElementById("username").value.trim();
-    const email = document.getElementById("regEmail").value;
-    const pass = document.getElementById("regPassword").value;
-
-    if (!/^[a-zA-Z0-9_]{3,20}$/.test(username)) {
-      alert("Username: a-z A-Z 0-9 _ (3–20)");
-      return;
-    }
-
-    let inviteRef = null;
-
-    if (invitesEnabled) {
-      const code = document.getElementById("invite").value.trim();
-      inviteRef = doc(db, "invites", code);
-      const snap = await getDoc(inviteRef);
-
-      if (!snap.exists() || snap.data().used) {
-        alert("Invalid invite");
-        return;
-      }
-    }
-
-    const cred = await createUserWithEmailAndPassword(auth, email, pass);
-
-    await setDoc(doc(db, "users", cred.user.uid), {
-      username,
-      email,
-      role: "user",
-      createdAt: Date.now()
-    });
-
-    if (invitesEnabled && inviteRef) {
-      await setDoc(inviteRef, {
-        ...(await getDoc(inviteRef)).data(),
-        used: true,
-        usedBy: cred.user.uid
-      });
-    }
-
-    location.href = "forum.html";
-  } catch (e) {
-    alert(e.message);
-  }
-});
+if (usernameParam) loadProfile();
+else usernameEl.innerText = "Нет username";
 </script>
 
 </body>
