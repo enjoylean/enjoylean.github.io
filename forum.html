@@ -146,6 +146,37 @@
     .thread-title { font-size: 18px; font-weight: 700; margin-bottom: 8px; }
     .thread-meta { font-size: 12px; color: #94a3b8; margin-bottom: 12px; }
     .thread-back { color: #93c5fd; cursor: pointer; text-decoration: underline; font-size: 12px; }
+    
+    .original-post {
+      background: rgba(10, 4, 21, 0.4);
+      padding: 12px;
+      margin-bottom: 12px;
+      border-radius: 6px;
+      border-left: 3px solid rgba(157, 78, 221, 0.5);
+    }
+
+    .admin-controls {
+      display: flex;
+      gap: 6px;
+      margin-top: 12px;
+      flex-wrap: wrap;
+    }
+
+    .admin-btn {
+      padding: 6px 12px;
+      font-size: 11px;
+      background: rgba(157, 78, 221, 0.3);
+      color: #93c5fd;
+      border: 1px solid rgba(157, 78, 221, 0.5);
+      border-radius: 4px;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+
+    .admin-btn:hover { background: rgba(157, 78, 221, 0.5); }
+
+    .admin-btn.danger { background: rgba(239, 68, 68, 0.2); color: #fca5a5; border-color: rgba(239, 68, 68, 0.5); }
+    .admin-btn.danger:hover { background: rgba(239, 68, 68, 0.3); }
 
     .replies-container {
       background: rgba(15, 23, 42, 0.6);
@@ -261,7 +292,10 @@
       <div class="thread-back" onclick="backToForum()">← Back to Forum</div>
       <div class="thread-title" id="threadTitle"></div>
       <div class="thread-meta" id="threadMeta"></div>
+      <div id="threadStatus" style="margin-top: 8px; font-size: 11px; color: #fca5a5;"></div>
     </div>
+
+    <div class="original-post" id="originalPost"></div>
 
     <div class="replies-container" id="repliesContainer"></div>
 
@@ -290,7 +324,7 @@
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-import { getFirestore, collection, getDocs, addDoc, serverTimestamp, query, orderBy, limit, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+import { getFirestore, collection, getDocs, addDoc, serverTimestamp, query, orderBy, limit, doc, getDoc, updateDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
 const firebaseConfig = {
   apiKey: "AIzaSyCIXJyovY1P0fvoEexAApCesqiTphA_mTk",
@@ -307,15 +341,28 @@ const db = getFirestore(app);
 
 let currentUser = null;
 let currentThreadId = null;
+let currentThreadData = null;
+let isAdmin = false;
 
 // CHECK AUTH
-onAuthStateChanged(auth, (user) => {
+onAuthStateChanged(auth, async (user) => {
   if (!user) {
     location.href = "index.html";
     return;
   }
   currentUser = user;
   document.getElementById("currentUser").textContent = user.email.split("@")[0] || user.email;
+  
+  // Check if admin
+  try {
+    const userDoc = await getDoc(doc(db, "users", user.uid));
+    if (userDoc.exists()) {
+      isAdmin = userDoc.data().role === "admin";
+    }
+  } catch (e) {
+    console.error("Error checking admin:", e);
+  }
+  
   loadForum();
   loadChat();
   
@@ -336,7 +383,7 @@ window.switchTab = function(tab) {
 // ===== LOAD FORUM =====
 async function loadForum() {
   try {
-    const postsSnap = await getDocs(query(collection(db, "posts"), orderBy("createdAt", "desc"), limit(50)));
+    const postsSnap = await getDocs(query(collection(db, "posts"), orderBy("pinned", "desc"), orderBy("createdAt", "desc"), limit(50)));
     const topicsList = document.getElementById("topicsList");
     topicsList.innerHTML = "";
 
@@ -350,11 +397,14 @@ async function loadForum() {
         
         const repliesSnap = await getDocs(collection(db, `posts/${postDoc.id}/replies`));
         const replyCount = repliesSnap.size;
+        
+        const pin = post.pinned ? "📌 " : "";
+        const closed = post.closed ? " 🔒" : "";
 
         topicsList.innerHTML += `
           <div class="topic" onclick="viewThread('${postDoc.id}', '${post.title}', '${username}', '${date}')">
             <div class="topic-left">
-              <div class="topic-title">${post.title}</div>
+              <div class="topic-title">${pin}${post.title}${closed}</div>
               <div class="topic-meta">Started by ${username}</div>
             </div>
             <div class="topic-right">
@@ -373,13 +423,48 @@ async function loadForum() {
 // ===== VIEW THREAD =====
 window.viewThread = async function(postId, title, author, date) {
   currentThreadId = postId;
-  document.getElementById("threadTitle").textContent = title;
-  document.getElementById("threadMeta").textContent = `by ${author} • ${date}`;
   
-  document.getElementById("forum-tab").style.display = "none";
-  document.getElementById("thread-view").classList.add("active");
-  
-  await loadThreadReplies(postId);
+  try {
+    const postDoc = await getDoc(doc(db, "posts", postId));
+    if (!postDoc.exists()) {
+      alert("Post not found");
+      return;
+    }
+    
+    currentThreadData = postDoc.data();
+    
+    document.getElementById("threadTitle").textContent = title;
+    document.getElementById("threadMeta").textContent = `by ${author} • ${date}`;
+    
+    // Show status if closed
+    const statusEl = document.getElementById("threadStatus");
+    if (currentThreadData.closed) {
+      statusEl.textContent = "🔒 This topic is closed";
+    } else {
+      statusEl.textContent = "";
+    }
+    
+    // Show original post
+    const originalPost = document.getElementById("originalPost");
+    originalPost.innerHTML = `
+      <div style="color: #93c5fd; font-weight: 600; font-size: 12px; margin-bottom: 4px;">${author}</div>
+      <div style="color: #cbd5e1; font-size: 13px;">${currentThreadData.content}</div>
+      ${isAdmin ? `<div class="admin-controls">
+        <button class="admin-btn" onclick="togglePin('${postId}')">📌 ${currentThreadData.pinned ? 'Unpin' : 'Pin'}</button>
+        <button class="admin-btn" onclick="toggleClosed('${postId}')">🔒 ${currentThreadData.closed ? 'Open' : 'Close'}</button>
+        <button class="admin-btn" onclick="renameThread('${postId}')">✏️ Rename</button>
+        <button class="admin-btn danger" onclick="deleteThread('${postId}')">🗑️ Delete</button>
+      </div>` : ''}
+    `;
+    
+    document.getElementById("forum-tab").style.display = "none";
+    document.getElementById("thread-view").classList.add("active");
+    
+    await loadThreadReplies(postId);
+  } catch (e) {
+    console.error("Error viewing thread:", e);
+    alert("Failed to load thread");
+  }
 };
 
 // ===== BACK TO FORUM =====
@@ -426,6 +511,11 @@ window.publishReply = async function() {
   }
 
   if (!currentThreadId) return;
+  
+  if (currentThreadData && currentThreadData.closed && !isAdmin) {
+    alert("This thread is closed");
+    return;
+  }
 
   try {
     const userDoc = await getDoc(doc(db, "users", currentUser.uid));
@@ -523,6 +613,78 @@ window.sendMessage = async () => {
   } catch (e) {
     console.error("Send message error:", e);
     alert("Failed to send message");
+  }
+};
+
+// ===== ADMIN: PIN/UNPIN =====
+window.togglePin = async function(postId) {
+  if (!isAdmin) return;
+  try {
+    await updateDoc(doc(db, "posts", postId), {
+      pinned: !currentThreadData.pinned
+    });
+    currentThreadData.pinned = !currentThreadData.pinned;
+    await viewThread(postId, currentThreadData.title, currentThreadData.username, new Date(currentThreadData.createdAt.toDate()).toLocaleDateString());
+  } catch (e) {
+    console.error("Error pinning:", e);
+    alert("Failed to update pin status");
+  }
+};
+
+// ===== ADMIN: CLOSE/OPEN =====
+window.toggleClosed = async function(postId) {
+  if (!isAdmin) return;
+  try {
+    await updateDoc(doc(db, "posts", postId), {
+      closed: !currentThreadData.closed
+    });
+    currentThreadData.closed = !currentThreadData.closed;
+    await viewThread(postId, currentThreadData.title, currentThreadData.username, new Date(currentThreadData.createdAt.toDate()).toLocaleDateString());
+  } catch (e) {
+    console.error("Error closing:", e);
+    alert("Failed to update status");
+  }
+};
+
+// ===== ADMIN: RENAME =====
+window.renameThread = async function(postId) {
+  if (!isAdmin) return;
+  const newTitle = prompt("Enter new title:", currentThreadData.title);
+  if (!newTitle) return;
+  
+  try {
+    await updateDoc(doc(db, "posts", postId), {
+      title: newTitle
+    });
+    currentThreadData.title = newTitle;
+    document.getElementById("threadTitle").textContent = newTitle;
+    loadForum();
+  } catch (e) {
+    console.error("Error renaming:", e);
+    alert("Failed to rename thread");
+  }
+};
+
+// ===== ADMIN: DELETE =====
+window.deleteThread = async function(postId) {
+  if (!isAdmin) return;
+  if (!confirm("Are you sure you want to delete this thread and all replies?")) return;
+  
+  try {
+    // Delete all replies
+    const repliesSnap = await getDocs(collection(db, `posts/${postId}/replies`));
+    for (const replyDoc of repliesSnap.docs) {
+      await deleteDoc(replyDoc.ref);
+    }
+    
+    // Delete post
+    await deleteDoc(doc(db, "posts", postId));
+    
+    backToForum();
+    loadForum();
+  } catch (e) {
+    console.error("Error deleting:", e);
+    alert("Failed to delete thread");
   }
 };
 
