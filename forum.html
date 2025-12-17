@@ -350,20 +350,39 @@
     </div>
   </div>
 
-  <!-- CASINO TAB -->
+  <!-- CASINO TAB (NEW DESIGN) -->
   <div id="casino-tab" class="tab-content" style="display:none;">
-    <div class="create-post-section">
-      <div class="section-title">Casino Wheel</div>
-      <input id="betAmount" placeholder="Bet amount (avidcoin)...">
-      <div style="margin-top:8px; color:#cbd5e1; font-size:13px">Chance is determined automatically by bet size: smaller bets have higher win chance.</div>
-
-      <div id="wheelWrap" style="margin-top:12px; display:flex; gap:16px; align-items:center;">
-        <div id="wheel" style="width:260px; height:260px; border-radius:50%; border:6px solid rgba(255,255,255,0.06); box-shadow:inset 0 6px 30px rgba(0,0,0,0.6); --win-deg:252deg; background: conic-gradient(from -90deg, #2563eb 0deg var(--win-deg), #ef4444 var(--win-deg) 360deg); transition: transform 4s cubic-bezier(.18,.9,.2,1);"></div>
-        <div style="display:flex; flex-direction:column; align-items:center">
-          <div id="pointer" style="width:0;height:0;border-left:14px solid transparent;border-right:14px solid transparent;border-bottom:22px solid #fff; filter:drop-shadow(0 4px 8px rgba(0,0,0,0.6)); transform:translateY(-6px);"></div>
-          <button id="spinBtn" style="margin-top:8px" onclick="spinCasino()">Spin</button>
-          <div id="casinoResult" style="margin-top:12px;color:#cbd5e1; max-width:200px; text-align:center"></div>
+    <div style="display:flex; gap:40px; align-items:flex-start; padding:20px;">
+      <!-- LEFT PANEL: BET CONTROLS -->
+      <div style="flex:0 0 320px;">
+        <div style="background: rgba(15, 23, 42, 0.6); border: 1px solid rgba(157, 78, 221, 0.1); border-radius: 8px; padding: 16px; backdrop-filter: blur(4px);">
+          <div style="font-size: 12px; font-weight: 700; color: #cbd5e1; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 12px;">Bet Amount</div>
+          <div style="display: flex; gap: 8px; align-items: center; margin-bottom: 12px;">
+            <span style="color: #fef08a; font-weight: 700;">⧫</span>
+            <input id="betAmount" type="number" min="1" max="10000" value="10" style="flex:1; padding: 8px; background: rgba(2, 6, 23, 0.55); border: 1px solid rgba(115, 125, 150, 0.12); border-radius: 6px; color: #fff;" onchange="updateCasinoDisplay()">
+          </div>
+          <input id="betSlider" type="range" min="1" max="1000" value="10" style="width: 100%; cursor: pointer; margin-bottom: 12px;" oninput="document.getElementById('betAmount').value = this.value; updateCasinoDisplay()">
+          <div style="display: flex; gap: 8px; font-size: 11px; color: #94a3b8; margin-bottom: 16px;">
+            <button style="flex:1; padding: 6px; background: rgba(157, 78, 221, 0.2); border: 1px solid rgba(157, 78, 221, 0.3); border-radius: 4px; color: #cbd5e1; cursor: pointer;" onclick="document.getElementById('betAmount').value = 10; document.getElementById('betSlider').value = 10; updateCasinoDisplay()">1/2</button>
+            <button style="flex:1; padding: 6px; background: rgba(157, 78, 221, 0.2); border: 1px solid rgba(157, 78, 221, 0.3); border-radius: 4px; color: #cbd5e1; cursor: pointer;" onclick="document.getElementById('betAmount').value = 50; document.getElementById('betSlider').value = 50; updateCasinoDisplay()">x2</button>
+            <button style="flex:1; padding: 6px; background: rgba(157, 78, 221, 0.2); border: 1px solid rgba(157, 78, 221, 0.3); border-radius: 4px; color: #cbd5e1; cursor: pointer;" onclick="document.getElementById('betAmount').value = 100; document.getElementById('betSlider').value = 100; updateCasinoDisplay()">Max</button>
+          </div>
+          <div style="font-size: 12px; font-weight: 700; color: #cbd5e1; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px;">Multiplier</div>
+          <div style="font-size: 24px; font-weight: 700; color: #fef08a; margin-bottom: 16px;" id="multDisplay">x1.20</div>
+          <button id="spinBtn" style="width: 100%; padding: 12px; background: linear-gradient(90deg, #10b981, #059669); color: #fff; border: none; border-radius: 6px; cursor: pointer; font-weight: 700; font-size: 14px;" onclick="spinCasino()">Spin</button>
         </div>
+      </div>
+
+      <!-- CENTER: WHEEL -->
+      <div style="flex:1; display: flex; flex-direction: column; align-items: center;">
+        <div id="wheel" style="width:320px; height:320px; border-radius:50%; border:8px solid rgba(255,255,255,0.08); box-shadow:inset 0 8px 40px rgba(0,0,0,0.8), 0 0 40px rgba(99,102,241,0.1); --win-deg:252deg; background: conic-gradient(from -90deg, #2563eb 0deg var(--win-deg), #ef4444 var(--win-deg) 360deg); transition: transform 4s cubic-bezier(.18,.9,.2,1); position: relative; display: flex; align-items: center; justify-content: center;">
+          <div style="position: absolute; top: 20px; text-align: center;">
+            <div style="font-size: 12px; color: rgba(255,255,255,0.5); text-transform: uppercase; letter-spacing: 1px;">Chance</div>
+            <div style="font-size: 36px; font-weight: 700; color: #fef08a;" id="chanceDisplay">70.00%</div>
+          </div>
+        </div>
+        <div id="pointer" style="width:0; height:0; border-left:18px solid transparent; border-right:18px solid transparent; border-bottom:28px solid #10b981; filter:drop-shadow(0 4px 12px rgba(0,0,0,0.8)); margin-top: -36px; z-index: 10;"></div>
+        <div id="casinoResult" style="margin-top:20px; color:#cbd5e1; text-align:center; font-size: 14px; min-height: 20px;"></div>
       </div>
     </div>
   </div>
@@ -785,6 +804,20 @@ async function buyItem(itemId, price, sellerUid) {
 }
 
 // ===== CASINO =====
+window.updateCasinoDisplay = function() {
+  const bet = parseInt(document.getElementById('betAmount').value, 10) || 0;
+  let chance = 70, mult = 1.2;
+  if (bet <= 50) {
+    chance = 70; mult = 1.2;
+  } else if (bet <= 200) {
+    chance = 60; mult = 1.5;
+  } else {
+    chance = 50; mult = 2.0;
+  }
+  document.getElementById('chanceDisplay').textContent = chance.toFixed(2) + '%';
+  document.getElementById('multDisplay').textContent = 'x' + mult.toFixed(2);
+};
+
 window.spinCasino = async function() {
   const bet = parseInt(document.getElementById('betAmount').value, 10);
   if (!bet || bet <= 0) { alert('Enter bet'); return; }
