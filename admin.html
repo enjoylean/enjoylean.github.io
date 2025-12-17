@@ -61,17 +61,21 @@ onAuthStateChanged(auth, async user => {
 
 window.generateInvite = async () => {
   if (!isAdmin) return;
+  try {
+    const code = "AVID-" + Math.random().toString(36).substring(2, 6).toUpperCase()
+                 + "-" + Math.random().toString(36).substring(2, 6).toUpperCase();
 
-  const code = "AVID-" + Math.random().toString(36).substring(2, 6).toUpperCase()
-               + "-" + Math.random().toString(36).substring(2, 6).toUpperCase();
+    await setDoc(doc(db, "invites", code), {
+      createdBy: currentUser.uid,
+      used: false,
+      createdAt: Date.now()
+    });
 
-  await setDoc(doc(db, "invites", code), {
-    createdBy: currentUser.uid,
-    used: false,
-    createdAt: Date.now()
-  });
-
-  document.getElementById("result").innerText = code;
+    document.getElementById("result").innerText = code;
+  } catch (e) {
+    console.error('Generate invite error', e);
+    alert((e.code ? e.code + ': ' : '') + e.message);
+  }
 };
 </script>
 
