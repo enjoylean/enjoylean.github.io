@@ -76,9 +76,9 @@
 
   window.login = async () => {
     try {
-      const email = email.value;
-      const password = password.value;
-      await signInWithEmailAndPassword(auth, email, password);
+      const emailValue = document.getElementById("email").value;
+      const passwordValue = document.getElementById("password").value;
+      await signInWithEmailAndPassword(auth, emailValue, passwordValue);
       msg.innerText = "Успешный вход ✅";
     } catch (e) {
       msg.innerText = e.message;
@@ -87,9 +87,9 @@
 
   window.register = async () => {
     try {
-      const email = email.value;
-      const password = password.value;
-      await createUserWithEmailAndPassword(auth, email, password);
+      const emailValue = document.getElementById("email").value;
+      const passwordValue = document.getElementById("password").value;
+      await createUserWithEmailAndPassword(auth, emailValue, passwordValue);
       msg.innerText = "Аккаунт создан 🎉";
     } catch (e) {
       msg.innerText = e.message;
