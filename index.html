@@ -137,8 +137,9 @@ function showError(msg, err) {
 }
 
 // ===== FIREBASE ИМПОРТЫ =====
-// debug: capture identitytoolkit responses (wrap fetch)
+// debug: capture identitytoolkit responses (wrap fetch + XHR)
 (function(){
+  // wrap fetch
   const origFetch = window.fetch.bind(window);
   window.fetch = async function(input, init){
     const res = await origFetch(input, init);
@@ -149,15 +150,46 @@ function showError(msg, err) {
         const txt = await clone.text();
         try{
           const json = JSON.parse(txt);
-          showError('Captured server response', json);
+          showError('Captured fetch response', json);
         }catch(err){
-          showError('Captured server response (non-JSON)', txt);
+          showError('Captured fetch response (non-JSON)', txt);
         }
       }
     }catch(err){
       console.warn('fetch wrapper error', err);
     }
     return res;
+  };
+  
+  // wrap XMLHttpRequest (Firebase SDK v10 may use this)
+  const origOpen = XMLHttpRequest.prototype.open;
+  XMLHttpRequest.prototype.open = function(method, url, ...rest){
+    this._debugUrl = url;
+    return origOpen.apply(this, [method, url, ...rest]);
+  };
+  
+  const origSend = XMLHttpRequest.prototype.send;
+  XMLHttpRequest.prototype.send = function(...args){
+    const xhrInstance = this;
+    const url = this._debugUrl || '';
+    const origOnReadyStateChange = this.onreadystatechange;
+    
+    this.onreadystatechange = function(){
+      if (this.readyState === 4 && url.includes('identitytoolkit.googleapis.com')){
+        try{
+          const txt = this.responseText;
+          const json = JSON.parse(txt);
+          showError('Captured XHR response', json);
+        }catch(err){
+          if (this.responseText){
+            showError('Captured XHR response (non-JSON)', this.responseText);
+          }
+        }
+      }
+      if (origOnReadyStateChange) origOnReadyStateChange.apply(this);
+    };
+    
+    return origSend.apply(this, args);
   };
 })();
 
