@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <title>Profile</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <style>
+    body { background:#0f172a; color:#e5e7eb; font-family:Arial; margin:0; padding:20px }
+    .card { max-width:600px; margin:auto; background:#020617; padding:20px; border-radius:12px }
+    h2 { margin-top:0 }
+    input, textarea, button { width:100%; margin-top:10px; padding:10px; border-radius:8px; border:none }
+    input, textarea { background:#020617; color:#fff; border:1px solid #334155 }
+    button { background:#2563eb; color:#fff; cursor:pointer }
+    .muted { color:#94a3b8; font-size:14px }
+  </style>
+</head>
+<body>
+
+<div class="card">
+  <h2 id="username">Загрузка...</h2>
+  <div class="muted" id="email"></div>
+
+  <textarea id="bio" placeholder="О себе" rows="4" style="display:none"></textarea>
+  <button id="save" style="display:none" onclick="saveProfile()">Сохранить</button>
+</div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+import { getFirestore, collection, query, where, getDocs, doc, updateDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyCIXJyovY1P0fvoEexAApCesqiTphA_mTk",
+  authDomain: "avidware.firebaseapp.com",
+  projectId: "avidware",
+  storageBucket: "avidware.firebasestorage.app",
+  messagingSenderId: "1003506881786",
+  appId: "1:1003506881786:web:8c64d2aaf477fdf009e543"
+};
+
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getFirestore(app);
+
+const params = new URLSearchParams(location.search);
+const usernameParam = params.get("u");
+
+const usernameEl = document.getElementById("username");
+const emailEl = document.getElementById("email");
+const bioEl = document.getElementById("bio");
+const saveBtn = document.getElementById("save");
+
+let profileUid = null;
+
+// загрузка профиля
+const loadProfile = async () => {
+  const q = query(collection(db, "users"), where("username", "==", usernameParam));
+  const snap = await getDocs(q);
+
+  if (snap.empty) {
+    usernameEl.innerText = "Пользователь не найден";
+    return;
+  }
+
+  const docSnap = snap.docs[0];
+  const data = docSnap.data();
+  profileUid = docSnap.id;
+
+  usernameEl.innerText = data.username;
+  emailEl.innerText = data.email;
+  bioEl.value = data.bio || "";
+
+  onAuthStateChanged(auth, user => {
+    if (user && user.uid === profileUid) {
+      bioEl.style.display = "block";
+      saveBtn.style.display = "block";
+    }
+  });
+};
+
+window.saveProfile = async () => {
+  await updateDoc(doc(db, "users", profileUid), {
+    bio: bioEl.value
+  });
+  alert("Сохранено");
+};
+
+if (usernameParam) loadProfile();
+else usernameEl.innerText = "Нет username";
+</script>
+
+</body>
+</html>
