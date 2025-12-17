@@ -75,7 +75,7 @@
     <h2>Login</h2>
     <input id="loginEmail" placeholder="Email">
     <input id="loginPassword" type="password" placeholder="Password">
-    <button id="loginBtn">Login</button>
+    <button onclick="doLogin()">Login</button>
   </div>
 
   <div id="register" class="form-section">
@@ -84,7 +84,7 @@
     <input id="regEmail" placeholder="Email">
     <input id="regPassword" type="password" placeholder="Password">
     <input id="invite" placeholder="Invite code" class="hidden">
-    <button id="registerBtn">Register</button>
+    <button onclick="doRegister()">Register</button>
     <div class="info-text">
       💡 Get invite: <a href="https://t.me/avidware" target="_blank" style="color:#93c5fd; text-decoration:none;">t.me/avidware</a>
     </div>
@@ -137,62 +137,6 @@ function showError(msg, err) {
 }
 
 // ===== FIREBASE ИМПОРТЫ =====
-// debug: capture identitytoolkit responses (wrap fetch + XHR)
-(function(){
-  // wrap fetch
-  const origFetch = window.fetch.bind(window);
-  window.fetch = async function(input, init){
-    const res = await origFetch(input, init);
-    try{
-      const url = (typeof input === 'string') ? input : (input && input.url) || '';
-      if (url && url.includes('identitytoolkit.googleapis.com')){
-        const clone = res.clone();
-        const txt = await clone.text();
-        try{
-          const json = JSON.parse(txt);
-          showError('Captured fetch response', json);
-        }catch(err){
-          showError('Captured fetch response (non-JSON)', txt);
-        }
-      }
-    }catch(err){
-      console.warn('fetch wrapper error', err);
-    }
-    return res;
-  };
-  
-  // wrap XMLHttpRequest (Firebase SDK v10 may use this)
-  const origOpen = XMLHttpRequest.prototype.open;
-  XMLHttpRequest.prototype.open = function(method, url, ...rest){
-    this._debugUrl = url;
-    return origOpen.apply(this, [method, url, ...rest]);
-  };
-  
-  const origSend = XMLHttpRequest.prototype.send;
-  XMLHttpRequest.prototype.send = function(...args){
-    const xhrInstance = this;
-    const url = this._debugUrl || '';
-    const origOnReadyStateChange = this.onreadystatechange;
-    
-    this.onreadystatechange = function(){
-      if (this.readyState === 4 && url.includes('identitytoolkit.googleapis.com')){
-        try{
-          const txt = this.responseText;
-          const json = JSON.parse(txt);
-          showError('Captured XHR response', json);
-        }catch(err){
-          if (this.responseText){
-            showError('Captured XHR response (non-JSON)', this.responseText);
-          }
-        }
-      }
-      if (origOnReadyStateChange) origOnReadyStateChange.apply(this);
-    };
-    
-    return origSend.apply(this, args);
-  };
-})();
-
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 import { getFirestore, doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
@@ -214,87 +158,80 @@ const db = getFirestore(app);
 // ===== INVITE CONFIG =====
 let invitesEnabled = false;
 
-try {
-  const cfg = await getDoc(doc(db, "config", "site"));
-  if (cfg.exists() && cfg.data().invitesEnabled === true) {
-    invitesEnabled = true;
-    const inviteEl = document.getElementById("invite");
-    if (inviteEl) inviteEl.classList.remove("hidden");
-  }
-} catch (e) {
-  console.warn("Config not found, invites OFF");
+const cfgSnap = await getDoc(doc(db, "config", "site"));
+if (cfgSnap.exists() && cfgSnap.data().invitesEnabled === true) {
+  invitesEnabled = true;
+  document.getElementById("invite").classList.remove("hidden");
 }
 
 // ===== LOGIN =====
-document.getElementById("loginBtn").addEventListener("click", async () => {
+window.doLogin = async () => {
   try {
-    const email = (document.getElementById("loginEmail").value || "").trim();
-    const pass = (document.getElementById("loginPassword").value || "").trim();
-
-    if (!email) { showError('Please enter your email'); return; }
-    if (!/^\S+@\S+\.\S+$/.test(email)) { showError('Invalid email format'); return; }
-    if (!pass || pass.length < 6) { showError('Password must be at least 6 characters'); return; }
-
-    await signInWithEmailAndPassword(auth, email, pass);
+    await signInWithEmailAndPassword(auth, document.getElementById("loginEmail").value, document.getElementById("loginPassword").value);
     location.href = "forum.html";
   } catch (e) {
-    console.error('Login error', e);
-    showError((e.code ? e.code + ': ' : '') + e.message, e);
+    console.error('Login error:', e);
+    alert("Login error: " + e.message);
   }
-});
+};
 
 // ===== REGISTER =====
-document.getElementById("registerBtn").addEventListener("click", async () => {
+window.doRegister = async () => {
   try {
-    const username = (document.getElementById("username").value || "").trim();
-    const email = (document.getElementById("regEmail").value || "").trim();
-    const pass = (document.getElementById("regPassword").value || "").trim();
-
-    if (!email) { showError('Please enter your email'); return; }
-    if (!/^\S+@\S+\.\S+$/.test(email)) { showError('Invalid email format'); return; }
-    if (!pass || pass.length < 6) { showError('Password must be at least 6 characters'); return; }
+    const username = document.getElementById("username").value.trim();
+    const mail = document.getElementById("regEmail").value;
+    const pass = document.getElementById("regPassword").value;
 
     if (!/^[a-zA-Z0-9_]{3,20}$/.test(username)) {
-      showError("Username: a-z A-Z 0-9 _ (3–20)");
+      alert("Invalid username (3-20 chars: a-z A-Z 0-9 _)");
       return;
     }
 
-    let inviteRef = null;
-
+    // 🔐 INVITE CHECK
     if (invitesEnabled) {
       const code = document.getElementById("invite").value.trim();
-      inviteRef = doc(db, "invites", code);
+      const inviteRef = doc(db, "invites", code);
       const snap = await getDoc(inviteRef);
 
       if (!snap.exists() || snap.data().used) {
-        showError("Invalid invite");
+        alert("Invalid invite");
         return;
       }
+
+      const cred = await createUserWithEmailAndPassword(auth, mail, pass);
+
+      await setDoc(doc(db, "users", cred.user.uid), {
+        username,
+        email: mail,
+        role: "user",
+        createdAt: Date.now()
+      });
+
+      await setDoc(inviteRef, {
+        ...snap.data(),
+        used: true,
+        usedBy: cred.user.uid
+      });
+
+      location.href = "forum.html";
+      return;
     }
 
-    const cred = await createUserWithEmailAndPassword(auth, email, pass);
-
+    // ❌ INVITES OFF
+    const cred = await createUserWithEmailAndPassword(auth, mail, pass);
     await setDoc(doc(db, "users", cred.user.uid), {
       username,
-      email,
+      email: mail,
       role: "user",
       createdAt: Date.now()
     });
 
-    if (invitesEnabled && inviteRef) {
-      await setDoc(inviteRef, {
-        ...(await getDoc(inviteRef)).data(),
-        used: true,
-        usedBy: cred.user.uid
-      });
-    }
-
     location.href = "forum.html";
   } catch (e) {
-    console.error('Register error', e);
-    showError((e.code ? e.code + ': ' : '') + e.message, e);
+    console.error('Register error:', e);
+    alert("Register error: " + e.message);
   }
-});
+};
 </script>
 
 </body>
