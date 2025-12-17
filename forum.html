@@ -279,7 +279,7 @@
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-import { getFirestore, collection, getDocs, addDoc, serverTimestamp, query, orderBy, limit } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+import { getFirestore, collection, getDocs, addDoc, serverTimestamp, query, orderBy, limit, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
 const firebaseConfig = {
   apiKey: "AIzaSyCIXJyovY1P0fvoEexAApCesqiTphA_mTk",
@@ -322,31 +322,113 @@ window.switchTab = function(tab, btn) {
 // ===== LOAD FORUM =====
 async function loadForum() {
   try {
-    const generalSnap = await getDocs(query(collection(db, "posts"), orderBy("createdAt", "desc"), limit(20)));
+    const postsSnap = await getDocs(query(collection(db, "posts"), orderBy("createdAt", "desc"), limit(20)));
     const generalTopics = document.getElementById("generalTopics");
     generalTopics.innerHTML = "";
 
-    if (generalSnap.empty) {
+    if (postsSnap.empty) {
       generalTopics.innerHTML = '<div style="color: #94a3b8; padding: 12px;">No posts yet. Be the first to post!</div>';
     } else {
-      generalSnap.forEach(doc => {
-        const post = doc.data();
+      for (const postDoc of postsSnap.docs) {
+        const post = postDoc.data();
         const date = post.createdAt ? new Date(post.createdAt.toDate()).toLocaleDateString() : "Unknown";
+        const username = post.username || post.author || "Anonymous";
+        
+        // Get reply count
+        const repliesSnap = await getDocs(collection(db, `posts/${postDoc.id}/replies`));
+        const replyCount = repliesSnap.size;
+
         generalTopics.innerHTML += `
-          <div class="topic">
-            <div class="topic-left">
+          <div class="topic" id="post-${postDoc.id}">
+            <div>
               <div class="topic-title">${post.title || "Untitled"}</div>
-              <div class="topic-meta">by ${post.author || "Anonymous"} • ${date}</div>
+              <div class="topic-meta">by ${username} • ${date}</div>
               <div style="color: #cbd5e1; margin-top: 6px; font-size: 13px;">${post.content || ""}</div>
+              <div style="margin-top: 10px; display: flex; gap: 12px;">
+                <button onclick="toggleReplies('${postDoc.id}')" style="padding: 6px 12px; background: rgba(157, 78, 221, 0.3); color: #93c5fd; border: 1px solid rgba(157, 78, 221, 0.5); border-radius: 4px; cursor: pointer; font-size: 12px;">
+                  💬 Replies (${replyCount})
+                </button>
+              </div>
+            </div>
+            <div id="replies-${postDoc.id}" style="display: none; margin-top: 12px; padding-top: 12px; border-top: 1px solid rgba(157, 78, 221, 0.2);">
+              <div id="replies-list-${postDoc.id}"></div>
+              <div style="margin-top: 10px; display: flex; gap: 8px;">
+                <input id="reply-input-${postDoc.id}" placeholder="Write a reply..." style="flex: 1; padding: 8px 12px; background: rgba(2, 6, 23, 0.55); color: #fff; border: 1px solid rgba(115, 125, 150, 0.12); border-radius: 4px; font-size: 12px;">
+                <button onclick="publishReply('${postDoc.id}')" style="padding: 8px 16px; background: linear-gradient(90deg, #8b63ff, #5b21b6); color: #fff; border: none; border-radius: 4px; cursor: pointer; font-weight: 600; font-size: 12px;">Post</button>
+              </div>
             </div>
           </div>
         `;
-      });
+      }
     }
   } catch (e) {
     console.error("Load forum error:", e);
   }
 }
+
+// ===== TOGGLE REPLIES =====
+window.toggleReplies = async function(postId) {
+  const repliesDiv = document.getElementById(`replies-${postId}`);
+  if (repliesDiv.style.display === "none") {
+    repliesDiv.style.display = "block";
+    await loadReplies(postId);
+  } else {
+    repliesDiv.style.display = "none";
+  }
+};
+
+// ===== LOAD REPLIES =====
+async function loadReplies(postId) {
+  try {
+    const repliesSnap = await getDocs(query(collection(db, `posts/${postId}/replies`), orderBy("createdAt", "asc")));
+    const repliesList = document.getElementById(`replies-list-${postId}`);
+    repliesList.innerHTML = "";
+
+    repliesSnap.forEach(replyDoc => {
+      const reply = replyDoc.data();
+      const username = reply.username || reply.author || "Anonymous";
+      const date = reply.createdAt ? new Date(reply.createdAt.toDate()).toLocaleTimeString() : "Unknown";
+      
+      repliesList.innerHTML += `
+        <div style="background: rgba(10, 4, 21, 0.5); padding: 8px 12px; margin-bottom: 8px; border-radius: 4px; border-left: 2px solid rgba(157, 78, 221, 0.4);">
+          <div style="color: #93c5fd; font-weight: 600; font-size: 11px;">${username} • ${date}</div>
+          <div style="color: #cbd5e1; margin-top: 4px; font-size: 12px;">${reply.text}</div>
+        </div>
+      `;
+    });
+  } catch (e) {
+    console.error("Load replies error:", e);
+  }
+}
+
+// ===== PUBLISH REPLY =====
+window.publishReply = async function(postId) {
+  const input = document.getElementById(`reply-input-${postId}`);
+  const text = input.value.trim();
+
+  if (!text) {
+    alert("Reply cannot be empty");
+    return;
+  }
+
+  try {
+    // Get current user's username
+    const userDoc = await getDoc(doc(db, "users", currentUser.uid));
+    const username = userDoc.exists() ? userDoc.data().username : currentUser.email.split("@")[0];
+
+    await addDoc(collection(db, `posts/${postId}/replies`), {
+      text,
+      author: currentUser.email.split("@")[0],
+      username,
+      createdAt: serverTimestamp()
+    });
+    input.value = "";
+    await loadReplies(postId);
+  } catch (e) {
+    console.error("Publish reply error:", e);
+    alert("Failed to publish reply");
+  }
+};
 
 // ===== PUBLISH POST =====
 window.publishPost = async () => {
@@ -359,10 +441,15 @@ window.publishPost = async () => {
   }
 
   try {
+    // Get current user's username
+    const userDoc = await getDoc(doc(db, "users", currentUser.uid));
+    const username = userDoc.exists() ? userDoc.data().username : currentUser.email.split("@")[0];
+
     await addDoc(collection(db, "posts"), {
       title,
       content,
       author: currentUser.email.split("@")[0],
+      username,
       createdAt: serverTimestamp()
     });
     document.getElementById("postTitle").value = "";
@@ -383,9 +470,10 @@ async function loadChat() {
 
     messagesSnap.forEach(doc => {
       const msg = doc.data();
+      const username = msg.username || msg.author || "Unknown";
       chatMessages.innerHTML += `
         <div class="chat-message">
-          <div class="chat-message-author">${msg.author || "Unknown"}:</div>
+          <div class="chat-message-author">${username}:</div>
           <div class="chat-message-text">${msg.text || ""}</div>
         </div>
       `;
@@ -406,8 +494,13 @@ window.sendMessage = async () => {
   if (!text) return;
 
   try {
+    // Get current user's username
+    const userDoc = await getDoc(doc(db, "users", currentUser.uid));
+    const username = userDoc.exists() ? userDoc.data().username : currentUser.email.split("@")[0];
+
     await addDoc(collection(db, "messages"), {
       author: currentUser.email.split("@")[0],
+      username,
       text,
       createdAt: serverTimestamp()
     });
