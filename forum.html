@@ -398,10 +398,30 @@ const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
 
+// Export Firestore functions for casino-wheel.js
+window.casinoFirebase = {
+  db,
+  doc,
+  increment,
+  serverTimestamp,
+  runTransaction,
+  getDoc,
+  updateDoc,
+  collection,
+  addDoc
+};
+
 let currentUser = null;
 let currentThreadId = null;
 let currentThreadData = null;
 let isAdmin = false;
+
+// Make currentUser accessible to casino-wheel.js
+Object.defineProperty(window, 'currentUser', {
+  get: () => currentUser,
+  set: (value) => { currentUser = value; },
+  configurable: true
+});
 
 // CHECK AUTH
 onAuthStateChanged(auth, async (user) => {
