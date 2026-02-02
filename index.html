@@ -1,238 +1,56 @@
 <!DOCTYPE html>
-<html lang="ru">
+<html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>Avidware</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link href="https://fonts.googleapis.com/css2?family=Lexend+Giga:wght@700&display=swap" rel="stylesheet">
-  <style>
-    body {
-      background:#0a0415; color:#e5e7eb; font-family:Inter, Arial, sans-serif;
-      display:flex; justify-content:center; align-items:center; height:100vh;
-      margin:0; overflow:hidden;
-    }
-
-    /* splash / logo */
-    .splash {
-      position:fixed; inset:0;
-      background:linear-gradient(135deg, #0a0415 0%, #1a0033 100%);
-      display:flex; justify-content:center; align-items:center;
-      z-index:9999; pointer-events:none;
-      animation:splashFade 3.6s ease-in-out forwards;
-    }
-
-    @keyframes splashFade { 0%{opacity:1} 60%{opacity:1} 100%{opacity:0} }
-
-    .logo-text { font-size:56px; font-weight:700; letter-spacing:2px; display:flex; gap:6px; font-family:'Lexend Giga', sans-serif; }
-    .logo-char { background:linear-gradient(90deg,#fff 0%,#e9ddff 50%,#9d4edd 100%); -webkit-background-clip:text; background-clip:text; -webkit-text-fill-color:transparent; text-shadow:0 0 28px rgba(157,78,221,0.8); transform:translateY(36px); opacity:0; animation:charSlideIn .56s cubic-bezier(.2,.9,.2,1) forwards; }
-
-    @keyframes charSlideIn { from{opacity:0; transform:translateY(36px)} to{opacity:1; transform:translateY(0)} }
-    .logo-char:nth-child(1){animation-delay:.08s} .logo-char:nth-child(2){animation-delay:.16s} .logo-char:nth-child(3){animation-delay:.24s}
-    .logo-char:nth-child(4){animation-delay:.32s} .logo-char:nth-child(5){animation-delay:.40s} .logo-char:nth-child(6){animation-delay:.48s}
-    .logo-char:nth-child(7){animation-delay:.56s} .logo-char:nth-child(8){animation-delay:.64s} .logo-char:nth-child(9){animation-delay:.72s}
-    .logo-char:nth-child(10){animation-delay:.80s} .logo-char:nth-child(11){animation-delay:.88s} .logo-char:nth-child(12){animation-delay:.96s}
-    .logo-char:nth-child(13){animation-delay:1.04s}
-
-    /* card + ambient glow */
-    .card { position:relative; background:rgba(15,23,42,0.6); padding:22px; border-radius:14px; width:360px; color:var(--fg,#e5e7eb); backdrop-filter:blur(6px) saturate(1.1); box-shadow: 0 10px 30px rgba(10,2,30,0.6); transform:translateY(0); opacity:0; animation:cardAppear .6s ease-in .9s forwards; }
-    .card::before { content:""; position:absolute; inset:-40px; background:radial-gradient(closest-side, rgba(157,78,221,0.18), transparent 40%); filter:blur(30px); z-index:-1; pointer-events:none; border-radius:18px; }
-
-    @keyframes cardAppear { from{opacity:0; transform:translateY(12px)} to{opacity:1; transform:translateY(0)} }
-
-    .tabs { display:flex; gap:10px; margin-bottom:18px; }
-    .tab-btn { flex:1; padding:10px; border-radius:999px; border:none; background:transparent; color:#cbd5e1; cursor:pointer; transition:all .28s; font-weight:600 }
-    .tab-btn.active { background:linear-gradient(90deg,#2b3650,#1f2a44); color:#fff; box-shadow:0 6px 16px rgba(45,40,80,0.25) }
-
-    .form-section { display:none; opacity:0; transform:translateY(12px); transition:opacity .28s, transform .28s }
-    .form-section.active { display:block; opacity:1; transform:translateY(0) }
-
-    .info-text { font-size:13px; color:#bfc9db; margin-top:12px; padding:10px 12px; background:linear-gradient(90deg, rgba(10,4,21,0.4), rgba(10,4,21,0.2)); border-radius:10px; border-left:3px solid rgba(157,78,221,0.7) }
-
-    input, button { width:100%; margin-top:10px; padding:12px 14px; border-radius:10px; box-sizing:border-box }
-    input { background:rgba(2,6,23,0.55); color:#fff; border:1px solid rgba(115,125,150,0.12); transition:box-shadow .18s, border-color .18s, transform .18s }
-    input:focus { outline:none; border-color:rgba(157,78,221,0.8); box-shadow:0 6px 18px rgba(157,78,221,0.12); transform:translateY(-2px) }
-
-    button { background:linear-gradient(90deg,#8b63ff,#5b21b6); color:#fff; border:none; font-weight:700; cursor:pointer; transition:transform .12s ease, box-shadow .12s }
-    button:active { transform:translateY(1px) }
-    button:hover { box-shadow:0 12px 30px rgba(92,33,182,0.18) }
-
-    .hidden{display:none}
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AvIdWaRe</title>
+    <link rel="stylesheet" href="styles.css">
 </head>
 <body>
+    <div class="container">
+        <header class="header">
+        </header>
 
-<div class="splash">
-  <div class="logo-text" id="logoText"></div>
-</div>
+        <main>
+            <section class="hero">
+                <h1 class="hero-title">
+                    <span class="letter" style="--index: 0;">A</span>
+                    <span class="letter" style="--index: 1;">V</span>
+                    <span class="letter" style="--index: 2;">I</span>
+                    <span class="letter" style="--index: 3;">D</span>
+                    <span class="letter" style="--index: 4;">W</span>
+                    <span class="letter" style="--index: 5;">A</span>
+                    <span class="letter" style="--index: 6;">R</span>
+                    <span class="letter" style="--index: 7;">E</span>
+                </h1>
+                <p class="hero-subtitle">читы нахуй</p>
+                <div class="social-buttons">
+                    <a href="https://discord.gg/VGwuqJFE" target="_blank" class="social-btn discord">
+                        <svg class="social-icon" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M20.317 4.37a19.791 19.791 0 00-4.885-1.515.074.074 0 00-.079.037c-.211.375-.445.865-.607 1.25a18.27 18.27 0 00-5.487 0c-.162-.39-.404-.875-.618-1.25a.077.077 0 00-.079-.037A19.736 19.736 0 003.677 4.37a.07.07 0 00-.032.027C.533 9.046-.32 13.58.099 18.057a.082.082 0 00.031.057 19.9 19.9 0 005.993 3.03.078.078 0 00.084-.028c.462-.63.873-1.295 1.226-1.994a.076.076 0 00-.042-.106 13.107 13.107 0 01-1.872-.892.077.077 0 01-.008-.128 10.2 10.2 0 00.372-.294.075.075 0 01.078-.01c3.928 1.793 8.18 1.793 12.062 0a.075.075 0 01.079.009c.12.098.246.198.373.295a.077.077 0 01-.006.127 12.299 12.299 0 01-1.873.892.076.076 0 00-.041.107c.36.698.77 1.364 1.225 1.994a.077.077 0 00.084.028 19.839 19.839 0 006.002-3.03.077.077 0 00.032-.056c.5-4.506-.838-8.962-3.552-12.66a.061.061 0 00-.031-.03zM8.02 15.33c-1.183 0-2.157-.965-2.157-2.156 0-1.193.93-2.157 2.157-2.157 1.226 0 2.157.964 2.157 2.157 0 1.191-.93 2.157-2.157 2.157zm7.975 0c-1.183 0-2.157-.965-2.157-2.156 0-1.193.93-2.157 2.157-2.157 1.226 0 2.157.964 2.157 2.157 0 1.191-.931 2.157-2.157 2.157z"/>
+                        </svg>
+                        <span>Discord</span>
+                    </a>
+                    <a href="https://t.me/avidware" target="_blank" class="social-btn telegram">
+                        <svg class="social-icon" viewBox="0 0 48 48" fill="currentColor">
+                            <path d="M41.4193 7.30899C41.4193 7.30899 45.3046 5.79399 44.9808 9.47328C44.8729 10.9883 43.9016 16.2908 43.1461 22.0262L40.5559 39.0159C40.5559 39.0159 40.3401 41.5048 38.3974 41.9377C36.4547 42.3705 33.5408 40.4227 33.0011 39.9898C32.5694 39.6652 24.9068 34.7955 22.2086 32.4148C21.4531 31.7655 20.5897 30.4669 22.3165 28.9519L33.6487 18.1305C34.9438 16.8319 36.2389 13.8019 30.8426 17.4812L15.7331 27.7616C15.7331 27.7616 14.0063 28.8437 10.7686 27.8698L3.75342 25.7055C3.75342 25.7055 1.16321 24.0823 5.58815 22.459C16.3807 17.3729 29.6555 12.1786 41.4193 7.30899Z"/>
+                        </svg>
+                        <span>Telegram</span>
+                    </a>
+                    <a href="https://t.me/ptch0" target="_blank" class="social-btn contact">
+                        <svg class="social-icon" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
+                        </svg>
+                        <span>Contact Owner</span>
+                    </a>
+                </div>
+            </section>
+        </main>
 
-<div class="card">
-  <div class="tabs">
-    <button class="tab-btn active" onclick="switchTab('login', this)">Login</button>
-    <button class="tab-btn" onclick="switchTab('register', this)">Register</button>
-  </div>
-
-  <div id="login" class="form-section active">
-    <h2>Login</h2>
-    <input id="loginEmail" placeholder="Email">
-    <input id="loginPassword" type="password" placeholder="Password">
-    <button onclick="doLogin()">Login</button>
-  </div>
-
-  <div id="register" class="form-section">
-    <h2>Register</h2>
-    <input id="username" placeholder="Username">
-    <input id="regEmail" placeholder="Email">
-    <input id="regPassword" type="password" placeholder="Password">
-    <input id="invite" placeholder="Invite code" class="hidden">
-    <button onclick="doRegister()">Register</button>
-    <div class="info-text">
-      💡 Get invite: <a href="https://t.me/avidware" target="_blank" style="color:#93c5fd; text-decoration:none;">t.me/avidware</a>
+        <footer class="footer">
+        </footer>
     </div>
-  </div>
-</div>
 
-<script type="module">
-// ===== АНИМАЦИЯ БУКВ =====
-const text = "avidware.fun";
-const logoEl = document.getElementById("logoText");
-text.split("").forEach(char => {
-  const span = document.createElement("span");
-  span.className = "logo-char";
-  span.textContent = char;
-  logoEl.appendChild(span);
-});
-
-// ===== ПЕРЕКЛЮЧЕНИЕ ТАБОВ =====
-window.switchTab = function(tab, btn) {
-  document.querySelectorAll(".form-section").forEach(el => el.classList.remove("active"));
-  document.querySelectorAll(".tab-btn").forEach(el => el.classList.remove("active"));
-  document.getElementById(tab).classList.add("active");
-  if (btn) btn.classList.add('active');
-};
-
-// display debug/error info in UI (declared before handlers)
-function showError(msg, err) {
-  console.warn(msg, err || '');
-  let el = document.getElementById('debugError');
-  if (!el) {
-    el = document.createElement('div');
-    el.id = 'debugError';
-    el.style.cssText = 'margin-top:12px;padding:10px;border-radius:10px;background:rgba(255,50,50,0.06);color:#ffdede;font-size:13px;word-break:break-word;';
-    const container = document.querySelector('.card') || document.body;
-    container.appendChild(el);
-  }
-  el.innerText = msg;
-  if (err) {
-    const json = JSON.stringify(err, Object.getOwnPropertyNames(err), 2);
-    let pre = document.getElementById('debugErrStack');
-    if (!pre) {
-      pre = document.createElement('pre');
-      pre.id = 'debugErrStack';
-      pre.style.cssText = 'margin-top:8px;color:#ffdede;opacity:0.95;white-space:pre-wrap;font-size:12px;background:rgba(0,0,0,0.12);padding:8px;border-radius:8px;';
-      const container = document.querySelector('.card') || document.body;
-      container.appendChild(pre);
-    }
-    pre.innerText = json;
-  }
-}
-
-// ===== FIREBASE ИМПОРТЫ =====
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-import { getFirestore, doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
-
-// ===== FIREBASE CONFIG =====
-const firebaseConfig = {
-  apiKey: "AIzaSyCIXJyovY1P0fvoEexAApCesqiTphA_mTk",
-  authDomain: "avidware.firebaseapp.com",
-  projectId: "avidware",
-  storageBucket: "avidware.firebasestorage.app",
-  messagingSenderId: "1003506881786",
-  appId: "1:1003506881786:web:8c64d2aaf477fdf009e543"
-};
-
-const app = initializeApp(firebaseConfig);
-const auth = getAuth(app);
-const db = getFirestore(app);
-
-// ===== INVITE CONFIG =====
-let invitesEnabled = false;
-
-const cfgSnap = await getDoc(doc(db, "config", "site"));
-if (cfgSnap.exists() && cfgSnap.data().invitesEnabled === true) {
-  invitesEnabled = true;
-  document.getElementById("invite").classList.remove("hidden");
-}
-
-// ===== LOGIN =====
-window.doLogin = async () => {
-  try {
-    await signInWithEmailAndPassword(auth, document.getElementById("loginEmail").value, document.getElementById("loginPassword").value);
-    location.href = "forum.html";
-  } catch (e) {
-    console.error('Login error:', e);
-    alert("Login error: " + e.message);
-  }
-};
-
-// ===== REGISTER =====
-window.doRegister = async () => {
-  try {
-    const username = document.getElementById("username").value.trim();
-    const mail = document.getElementById("regEmail").value;
-    const pass = document.getElementById("regPassword").value;
-
-    if (!/^[a-zA-Z0-9_]{3,20}$/.test(username)) {
-      alert("Invalid username (3-20 chars: a-z A-Z 0-9 _)");
-      return;
-    }
-
-    // 🔐 INVITE CHECK
-    if (invitesEnabled) {
-      const code = document.getElementById("invite").value.trim();
-      const inviteRef = doc(db, "invites", code);
-      const snap = await getDoc(inviteRef);
-
-      if (!snap.exists() || snap.data().used) {
-        alert("Invalid invite");
-        return;
-      }
-
-      const cred = await createUserWithEmailAndPassword(auth, mail, pass);
-
-      await setDoc(doc(db, "users", cred.user.uid), {
-        username,
-        email: mail,
-        role: "user",
-        createdAt: Date.now()
-      });
-
-      await setDoc(inviteRef, {
-        ...snap.data(),
-        used: true,
-        usedBy: cred.user.uid
-      });
-
-      location.href = "forum.html";
-      return;
-    }
-
-    // ❌ INVITES OFF
-    const cred = await createUserWithEmailAndPassword(auth, mail, pass);
-    await setDoc(doc(db, "users", cred.user.uid), {
-      username,
-      email: mail,
-      role: "user",
-      createdAt: Date.now()
-    });
-
-    location.href = "forum.html";
-  } catch (e) {
-    console.error('Register error:', e);
-    alert("Register error: " + e.message);
-  }
-};
-</script>
-
+    <script src="script.js"></script>
 </body>
 </html>
