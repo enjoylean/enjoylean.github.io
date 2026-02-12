@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Profile Card - Glassmorphism</title>
+    <style>
+        /* Стилизация фона */
+        body {
+            margin: 0;
+            padding: 0;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(45deg, #0f0c29, #302b63, #24243e); /* Темный градиент */
+            color: white;
+            overflow: hidden;
+        }
+
+        /* Общий контейнер для карточек */
+        .container {
+            width: 350px;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        /* Основная карточка (Glassmorphism) */
+        .card {
+            background: rgba(255, 255, 255, 0.05); /* Прозрачность */
+            backdrop-filter: blur(15px); /* Размытие фона за карточкой */
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            padding: 30px;
+            text-align: center;
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.8);
+        }
+
+        /* Аватар */
+        .avatar {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            border: 2px solid white;
+            margin-bottom: 15px;
+        }
+
+        .username {
+            font-size: 24px;
+            font-weight: bold;
+            letter-spacing: 1px;
+            margin: 10px 0;
+        }
+
+        .description {
+            font-size: 14px;
+            color: #ccc;
+            line-height: 1.6;
+        }
+
+        .info {
+            margin-top: 15px;
+            font-size: 12px;
+            color: #888;
+        }
+
+        /* Маленькие блоки снизу */
+        .sub-card {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 12px 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .sub-card img {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+        }
+
+        .profile-btn {
+            background: rgba(255, 255, 255, 0.1);
+            border: none;
+            color: white;
+            padding: 5px 15px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 12px;
+        }
+
+        /* Стили для музыки */
+        .music-info {
+            display: flex;
+            flex-direction: column;
+            flex-grow: 1;
+            margin-left: 15px;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 4px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 2px;
+            margin-top: 8px;
+            position: relative;
+        }
+
+        .progress-fill {
+            width: 40%;
+            height: 100%;
+            background: #fff;
+            border-radius: 2px;
+        }
+
+        .social-icons {
+            margin-top: 20px;
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+        }
+
+        .social-icons span {
+            font-size: 20px;
+            cursor: pointer;
+            opacity: 0.7;
+        }
+
+        .social-icons span:hover {
+            opacity: 1;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="card">
+        <img src="https://via.placeholder.com/100" alt="Avatar" class="avatar">
+        <div class="username">arteroner</div>
+        <div class="description">
+            Fragolino Enjoyer<br>
+            Fuck byp4sser
+        </div>
+        <div class="info">
+            16 y.o <br>
+            📅 Joined 9 months ago
+        </div>
+        
+        <div class="social-icons">
+            <span>🎮</span>
+            <span>📱</span>
+            <span>✈️</span>
+        </div>
+    </div>
+
+    <div class="sub-card">
+        <div style="display: flex; align-items: center;">
+            <img src="https://via.placeholder.com/40" alt="Hedgehog">
+            <span style="margin-left: 10px; font-weight: bold;">ПРОКЛЯТІЙ ЕЖИК</span>
+        </div>
+        <button class="profile-btn">Profile</button>
+    </div>
+
+    <div class="sub-card">
+        <img src="https://via.placeholder.com/40" alt="Album Art">
+        <div class="music-info">
+            <span style="font-size: 14px; font-weight: bold;">9 scarecrow</span>
+            <div class="progress-bar">
+                <div class="progress-fill"></div>
+            </div>
+        </div>
+        <div style="font-size: 18px; cursor: pointer;">Ⅱ</div>
+    </div>
+</div>
+
+</body>
+</html>
