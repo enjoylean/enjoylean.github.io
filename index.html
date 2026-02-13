@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>avidboy | Space</title>
+    <title>avidware | hoholmvmgang</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         :root {
@@ -19,86 +19,135 @@
             display: flex; justify-content: center; align-items: center;
         }
 
-        /* ЭФФЕКТ СНЕЖИНОК (Canvas) */
         #snow-canvas {
             position: fixed; top: 0; left: 0;
-            pointer-events: none; z-index: 500;
+            pointer-events: none; z-index: 1;
         }
 
-        #enter-screen {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: #000; display: flex; justify-content: center;
-            align-items: center; z-index: 1000; cursor: pointer; transition: opacity 1.2s ease;
+        /* КОНТЕЙНЕР САЙТА */
+        .main-content {
+            z-index: 10;
+            text-align: center;
+            perspective: 1000px;
         }
-
-        .enter-text { font-size: 11px; letter-spacing: 10px; text-transform: uppercase; color: #333; animation: breathe 3s infinite ease-in-out; }
-        @keyframes breathe { 0%, 100% { opacity: 0.3; } 50% { opacity: 1; } }
-
-        .perspective-container { perspective: 2000px; display: none; opacity: 0; transition: opacity 1s ease; z-index: 100; }
 
         .card {
-            background: var(--glass); backdrop-filter: blur(30px); -webkit-backdrop-filter: blur(30px);
-            border: 1px solid var(--border); border-radius: 35px; padding: 60px 45px;
-            width: 280px; text-align: center; position: relative; transform-style: preserve-3d;
-            transition: transform 0.5s cubic-bezier(0.23, 1, 0.32, 1); box-shadow: 0 15px 50px rgba(0,0,0,0.8);
+            background: var(--glass);
+            backdrop-filter: blur(25px);
+            -webkit-backdrop-filter: blur(25px);
+            border: 1px solid var(--border);
+            border-radius: 40px;
+            padding: 50px;
+            transform-style: preserve-3d;
+            transition: transform 0.2s ease-out;
+            box-shadow: 0 25px 50px rgba(0,0,0,0.5);
         }
 
-        .avatar { width: 110px; height: 110px; border-radius: 50%; margin-bottom: 25px; border: 1px solid var(--border); transform: translateZ(50px); object-fit: cover; }
-        .nickname { font-size: 34px; font-weight: 900; margin: 0 0 10px 0; letter-spacing: -1.5px; transform: translateZ(40px); background: linear-gradient(180deg, #fff 0%, #888 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-        .bio { color: #777; font-size: 14px; line-height: 1.6; margin-bottom: 15px; transform: translateZ(30px); }
+        /* НАДПИСЬ AVIDWARE */
+        .hero-title {
+            font-size: 60px;
+            font-weight: 900;
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            gap: 5px;
+            transform: translateZ(50px);
+        }
 
-        .views-container { font-size: 12px; color: #444; margin-bottom: 30px; display: flex; align-items: center; justify-content: center; gap: 8px; transform: translateZ(35px); }
-        .socials { display: flex; justify-content: center; gap: 30px; transform: translateZ(45px); }
-        .socials a { color: #fff; font-size: 24px; text-decoration: none; opacity: 0.4; transition: 0.3s ease; }
-        .socials a:hover { opacity: 1; transform: scale(1.1) translateZ(10px); }
+        .letter {
+            display: inline-block;
+            background: linear-gradient(180deg, #fff 30%, #444 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            transition: 0.3s;
+        }
+
+        .card:hover .letter {
+            animation: jump 1s ease-in-out infinite;
+            animation-delay: calc(var(--index) * 0.1s);
+        }
+
+        @keyframes jump {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-15px); }
+        }
+
+        .hero-subtitle {
+            font-size: 18px;
+            color: #888;
+            letter-spacing: 12px;
+            text-transform: uppercase;
+            margin: 10px 0 40px 0;
+            transform: translateZ(30px);
+        }
+
+        /* ФОРМА ЗАЯВКИ */
+        .gang-box {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            padding: 25px;
+            transform: translateZ(20px);
+        }
+
+        .gang-title {
+            font-size: 14px;
+            color: #555;
+            margin-bottom: 20px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        .bot-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            text-decoration: none;
+            color: #000;
+            background: #fff;
+            padding: 12px 30px;
+            border-radius: 12px;
+            font-weight: 800;
+            font-size: 14px;
+            transition: 0.3s ease;
+        }
+
+        .bot-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 20px rgba(255,255,255,0.4);
+        }
     </style>
 </head>
 <body>
 
     <canvas id="snow-canvas"></canvas>
 
-    <div id="enter-screen" onclick="init()">
-        <div class="enter-text">click to enter</div>
-    </div>
-
-    <audio id="music" src="owner.mp3" loop></audio>
-
-    <div class="perspective-container" id="main">
+    <div class="main-content">
         <div class="card" id="tilt-card">
-            <img src="https://i.postimg.cc/3wSCycjq/photo-2026-02-07-17-53-44.jpg" alt="avatar" class="avatar">
-            <h1 class="nickname">avidboy</h1>
-            <div class="bio">avidware owner.</div>
-            <div class="views-container">
-                <i class="fa-regular fa-eye"></i>
-                <span id="visits">0</span>
-            </div>
-            <div class="socials">
-                <a href="https://t.me/ptch0" target="_blank"><i class="fa-brands fa-telegram"></i></a>
-                <a href="https://discord.gg/KEWyWQYU66" target="_blank"><i class="fa-brands fa-discord"></i></a>
+            <h1 class="hero-title">
+                <span class="letter" style="--index: 0;">a</span>
+                <span class="letter" style="--index: 1;">v</span>
+                <span class="letter" style="--index: 2;">i</span>
+                <span class="letter" style="--index: 3;">d</span>
+                <span class="letter" style="--index: 4;">w</span>
+                <span class="letter" style="--index: 5;">a</span>
+                <span class="letter" style="--index: 6;">r</span>
+                <span class="letter" style="--index: 7;">e</span>
+            </h1>
+            <p class="hero-subtitle">чiт</p>
+
+            <div class="gang-box">
+                <div class="gang-title">заявка в hoholmvmgang</div>
+                <a href="https://t.me/nwcle_bot" target="_blank" class="bot-btn">
+                    <i class="fa-brands fa-telegram"></i>
+                    ПОДАТЬ ЧЕРЕЗ BOT
+                </a>
             </div>
         </div>
     </div>
 
-    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
-
     <script>
-        // --- КОНФИГ FIREBASE ---
-        const firebaseConfig = {
-            apiKey: "AIzaSyB-WET_yswPKZ9SQc13BZg8wumcNpk8tCs",
-            authDomain: "avidware-5698f.firebaseapp.com",
-            projectId: "avidware-5698f",
-            databaseURL: "https://avidware-5698f-default-rtdb.firebaseio.com/",
-            storageBucket: "avidware-5698f.firebasestorage.app",
-            messagingSenderId: "588697228776",
-            appId: "1:588697228776:web:fbd3980227874332f6405d"
-        };
-
-        firebase.initializeApp(firebaseConfig);
-        const database = firebase.database();
-        const visitsRef = database.ref('owner_views');
-
-        // --- ЛОГИКА СНЕЖИНОК ---
+        // Снежинки за курсором
         const canvas = document.getElementById('snow-canvas');
         const ctx = canvas.getContext('2d');
         let particles = [];
@@ -114,15 +163,15 @@
             constructor(x, y) {
                 this.x = x;
                 this.y = y;
-                this.size = Math.random() * 3 + 1;
-                this.speedX = Math.random() * 1 - 0.5;
-                this.speedY = Math.random() * 1 + 0.5;
+                this.size = Math.random() * 2 + 1;
+                this.speedX = Math.random() * 2 - 1;
+                this.speedY = Math.random() * 2 - 1;
                 this.opacity = 1;
             }
             update() {
-                this.y += this.speedY;
                 this.x += this.speedX;
-                this.opacity -= 0.005;
+                this.y += this.speedY;
+                this.opacity -= 0.01;
             }
             draw() {
                 ctx.fillStyle = `rgba(255, 255, 255, ${this.opacity})`;
@@ -132,71 +181,32 @@
             }
         }
 
-        // Появление снежинок при движении мыши
         window.addEventListener('mousemove', (e) => {
-            for (let i = 0; i < 2; i++) {
+            for (let i = 0; i < 3; i++) {
                 particles.push(new Particle(e.clientX, e.clientY));
             }
         });
 
-        function animateParticles() {
+        function animate() {
             ctx.clearRect(0, 0, canvas.width, canvas.height);
             for (let i = 0; i < particles.length; i++) {
                 particles[i].update();
                 particles[i].draw();
-                if (particles[i].opacity <= 0 || particles[i].y > canvas.height) {
+                if (particles[i].opacity <= 0) {
                     particles.splice(i, 1);
                     i--;
                 }
             }
-            requestAnimationFrame(animateParticles);
+            requestAnimationFrame(animate);
         }
-        animateParticles();
+        animate();
 
-        // --- ЛОГИКА САЙТА ---
+        // Наклон карточки
         const card = document.getElementById('tilt-card');
-        const mainContainer = document.getElementById('main');
-
-        function init() {
-            document.getElementById('music').play();
-            document.getElementById('enter-screen').style.opacity = '0';
-            setTimeout(() => {
-                document.getElementById('enter-screen').style.display = 'none';
-                mainContainer.style.display = 'block';
-                setTimeout(() => mainContainer.style.opacity = '1', 50);
-                handleViews();
-            }, 1200);
-        }
-
-        function handleViews() {
-            console.log("Checking views...");
-            // Защита от накрутки
-            if (!localStorage.getItem('owner_visited')) {
-                visitsRef.transaction((currentValue) => {
-                    return (currentValue || 0) + 1;
-                }, (error) => {
-                    if (!error) localStorage.setItem('owner_visited', 'true');
-                    else console.error("Firebase Error:", error);
-                });
-            }
-
-            // Обновление в реальном времени
-            visitsRef.on('value', (snapshot) => {
-                document.getElementById('visits').innerText = snapshot.val() || 0;
-            });
-        }
-
-        // Tilt эффект
         document.addEventListener('mousemove', (e) => {
-            if (mainContainer.style.display !== 'block') return;
-            const cardRect = card.getBoundingClientRect();
-            const mouseX = e.clientX - (cardRect.left + cardRect.width / 2);
-            const mouseY = e.clientY - (cardRect.top + cardRect.height / 2);
-            card.style.transform = `rotateX(${-mouseY / 25}deg) rotateY(${mouseX / 30}deg)`;
-        });
-
-        document.addEventListener('mouseleave', () => {
-            card.style.transform = `rotateX(0deg) rotateY(0deg)`;
+            const x = (window.innerWidth / 2 - e.clientX) / 25;
+            const y = (window.innerHeight / 2 - e.clientY) / 25;
+            card.style.transform = `rotateY(${-x}deg) rotateX(${y}deg)`;
         });
     </script>
 </body>
