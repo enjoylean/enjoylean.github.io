@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>avidboy | Space</title>
+    <title>avidboy</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         :root {
@@ -13,120 +13,40 @@
         }
 
         body, html {
-            margin: 0;
-            padding: 0;
-            width: 100%;
-            height: 100%;
-            background: var(--bg);
-            font-family: 'Inter', sans-serif;
-            color: white;
-            overflow: hidden;
-            display: flex;
-            justify-content: center;
-            align-items: center;
+            margin: 0; padding: 0; width: 100%; height: 100%;
+            background: var(--bg); font-family: 'Inter', sans-serif;
+            color: white; overflow: hidden;
+            display: flex; justify-content: center; align-items: center;
         }
 
-        /* ЭКРАН ВХОДА */
         #enter-screen {
-            position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: #000;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            z-index: 100;
-            cursor: pointer;
-            transition: opacity 1.2s ease;
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: #000; display: flex; justify-content: center;
+            align-items: center; z-index: 100; cursor: pointer; transition: opacity 1.2s ease;
         }
 
-        .enter-text {
-            font-size: 11px;
-            letter-spacing: 10px;
-            text-transform: uppercase;
-            color: #333;
-            animation: breathe 3s infinite ease-in-out;
-        }
+        .enter-text { font-size: 11px; letter-spacing: 10px; text-transform: uppercase; color: #333; animation: breathe 3s infinite ease-in-out; }
+        @keyframes breathe { 0%, 100% { opacity: 0.3; } 50% { opacity: 1; } }
 
-        @keyframes breathe {
-            0%, 100% { opacity: 0.3; }
-            50% { opacity: 1; }
-        }
+        .perspective-container { perspective: 2000px; display: none; opacity: 0; transition: opacity 1s ease; }
 
-        /* КОНТЕЙНЕР */
-        .perspective-container {
-            perspective: 2000px; /* Увеличил дистанцию для мягкости */
-            display: none; 
-            opacity: 0;
-            transition: opacity 1s ease;
-        }
-
-        /* КАРТОЧКА */
         .card {
-            background: var(--glass);
-            backdrop-filter: blur(30px);
-            -webkit-backdrop-filter: blur(30px);
-            border: 1px solid var(--border);
-            border-radius: 35px;
-            padding: 60px 45px;
-            width: 280px;
-            text-align: center;
-            position: relative;
-            transform-style: preserve-3d;
-            /* Плавный переход для возврата и движения */
-            transition: transform 0.5s cubic-bezier(0.23, 1, 0.32, 1); 
-            box-shadow: 0 15px 50px rgba(0,0,0,0.8);
+            background: var(--glass); backdrop-filter: blur(30px); -webkit-backdrop-filter: blur(30px);
+            border: 1px solid var(--border); border-radius: 35px; padding: 60px 45px;
+            width: 280px; text-align: center; position: relative; transform-style: preserve-3d;
+            transition: transform 0.5s cubic-bezier(0.23, 1, 0.32, 1); box-shadow: 0 15px 50px rgba(0,0,0,0.8);
         }
 
-        .avatar {
-            width: 110px;
-            height: 110px;
-            border-radius: 50%;
-            margin-bottom: 25px;
-            border: 1px solid var(--border);
-            transform: translateZ(40px); 
-            object-fit: cover;
-            pointer-events: none;
-            box-shadow: 0 10px 20px rgba(0,0,0,0.3);
-        }
+        .avatar { width: 110px; height: 110px; border-radius: 50%; margin-bottom: 25px; border: 1px solid var(--border); transform: translateZ(40px); object-fit: cover; box-shadow: 0 10px 20px rgba(0,0,0,0.3); }
+        .nickname { font-size: 34px; font-weight: 900; margin: 0 0 10px 0; letter-spacing: -1.5px; transform: translateZ(30px); background: linear-gradient(180deg, #fff 0%, #888 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .bio { color: #777; font-size: 14px; line-height: 1.6; margin-bottom: 15px; transform: translateZ(20px); }
 
-        .nickname {
-            font-size: 34px;
-            font-weight: 900;
-            margin: 0 0 10px 0;
-            letter-spacing: -1.5px;
-            transform: translateZ(30px);
-            background: linear-gradient(180deg, #fff 0%, #888 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
+        /* Счетчик */
+        .views-container { font-size: 12px; color: #444; margin-bottom: 30px; display: flex; align-items: center; justify-content: center; gap: 6px; transform: translateZ(25px); }
 
-        .bio {
-            color: #777;
-            font-size: 14px;
-            line-height: 1.6;
-            margin-bottom: 35px;
-            transform: translateZ(20px);
-        }
-
-        .socials {
-            display: flex;
-            justify-content: center;
-            gap: 30px;
-            transform: translateZ(35px);
-        }
-
-        .socials a {
-            color: #fff;
-            font-size: 24px;
-            text-decoration: none;
-            opacity: 0.4;
-            transition: 0.3s ease;
-        }
-
-        .socials a:hover {
-            opacity: 1;
-            transform: scale(1.1);
-        }
+        .socials { display: flex; justify-content: center; gap: 30px; transform: translateZ(35px); }
+        .socials a { color: #fff; font-size: 24px; text-decoration: none; opacity: 0.4; transition: 0.3s ease; }
+        .socials a:hover { opacity: 1; transform: scale(1.1); }
     </style>
 </head>
 <body>
@@ -140,12 +60,12 @@
     <div class="perspective-container" id="main">
         <div class="card" id="tilt-card">
             <img src="https://i.postimg.cc/3wSCycjq/photo-2026-02-07-17-53-44.jpg" alt="avatar" class="avatar">
-            
             <h1 class="nickname">avidboy</h1>
-            
-            <div class="bio">
-                avidware owner.<br>
-             
+            <div class="bio">avidware owner.</div>
+
+            <div class="views-container">
+                <i class="fa-regular fa-eye"></i>
+                <span id="visits">0</span>
             </div>
 
             <div class="socials">
@@ -155,7 +75,25 @@
         </div>
     </div>
 
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
+
     <script>
+        // Твой конфиг
+        const firebaseConfig = {
+            apiKey: "AIzaSyB-WET_yswPKZ9SQc13BZg8wumcNpk8tCs",
+            authDomain: "avidware-5698f.firebaseapp.com",
+            projectId: "avidware-5698f",
+            databaseURL: "https://avidware-5698f-default-rtdb.firebaseio.com/", // Ссылка на твою базу
+            storageBucket: "avidware-5698f.firebasestorage.app",
+            messagingSenderId: "588697228776",
+            appId: "1:588697228776:web:fbd3980227874332f6405d"
+        };
+
+        firebase.initializeApp(firebaseConfig);
+        const database = firebase.database();
+        const visitsRef = database.ref('owner_views');
+
         const card = document.getElementById('tilt-card');
         const container = document.getElementById('main');
         const music = document.getElementById('music');
@@ -167,28 +105,36 @@
                 document.getElementById('enter-screen').style.display = 'none';
                 container.style.display = 'block';
                 setTimeout(() => container.style.opacity = '1', 50);
+                
+                handleViews();
             }, 1200);
         }
 
-        // МЯГКИЙ НАКЛОН
+        function handleViews() {
+            // Защита от F5
+            if (!localStorage.getItem('owner_visited')) {
+                visitsRef.transaction((currentValue) => {
+                    return (currentValue || 0) + 1;
+                });
+                localStorage.setItem('owner_visited', 'true');
+            }
+
+            // Отображение в реальном времени
+            visitsRef.on('value', (snapshot) => {
+                const count = snapshot.val();
+                document.getElementById('visits').innerText = count || 0;
+            });
+        }
+
+        // Tilt Logic
         document.addEventListener('mousemove', (e) => {
             if (container.style.display !== 'block') return;
-
             const cardRect = card.getBoundingClientRect();
-            const centerX = cardRect.left + cardRect.width / 2;
-            const centerY = cardRect.top + cardRect.height / 2;
-            
-            const mouseX = e.clientX - centerX;
-            const mouseY = e.clientY - centerY;
-
-            // Изменил делитель на 25 и 30 (было 10), чтобы наклон был слабее
-            const rotateX = (-mouseY / 25).toFixed(2);
-            const rotateY = (mouseX / 30).toFixed(2);
-
-            card.style.transform = `rotateX(${rotateX}deg) rotateY(${rotateY}deg)`;
+            const mouseX = e.clientX - (cardRect.left + cardRect.width / 2);
+            const mouseY = e.clientY - (cardRect.top + cardRect.height / 2);
+            card.style.transform = `rotateX(${-mouseY / 25}deg) rotateY(${mouseX / 30}deg)`;
         });
 
-        // Плавный возврат
         document.addEventListener('mouseleave', () => {
             card.style.transform = `rotateX(0deg) rotateY(0deg)`;
         });
