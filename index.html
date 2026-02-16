@@ -14,9 +14,19 @@
 
         body, html {
             margin: 0; padding: 0; width: 100%; height: 100%;
-            background: var(--bg); font-family: 'Inter', sans-serif;
+            background: transparent; font-family: 'Inter', sans-serif;
             color: white; overflow: hidden;
             display: flex; justify-content: center; align-items: center;
+        }
+
+        #bg-video {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            z-index: 0;
         }
 
         #snow-canvas {
@@ -119,6 +129,10 @@
     </style>
 </head>
 <body>
+
+    <video autoplay muted loop id="bg-video">
+        <source src="videa.mp4" type="video/mp4">
+    </video>
 
     <canvas id="snow-canvas"></canvas>
 
