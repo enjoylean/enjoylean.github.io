@@ -2,7 +2,7 @@
 <html lang="ru">
 <head>
 <meta charset="UTF-8">
-<title>Draggable Register</title>
+<title>register</title>
 
 <!-- Firebase -->
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
@@ -10,7 +10,7 @@
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
 
 <style>
-/* === ТВОЙ СТИЛЬ, НЕ ТРОГАЮ === */
+/* ===== ТВОЙ СТИЛЬ, НЕ МЕНЯЛ ===== */
 * {
     box-sizing: border-box;
     margin: 0;
@@ -71,7 +71,8 @@ input::placeholder { color: #444; font-weight: bold; }
     color: #d1d1d1;
     font-weight: bold;
     font-size: 12px;
-    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.1), 0 2px 4px rgba(0, 0, 0, 0.6);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.1),
+                0 2px 4px rgba(0, 0, 0, 0.6);
     transition: 0.2s;
 }
 .action-btn:hover {
@@ -85,24 +86,31 @@ input::placeholder { color: #444; font-weight: bold; }
 
 <div class="loader-box" id="draggable">
     <div class="gradient-line"></div>
+
     <div class="form-container">
         <div class="input-group">
             <input id="username" type="text" placeholder="Username">
         </div>
+
         <div class="input-group">
             <input id="email" type="email" placeholder="Email">
         </div>
+
         <div class="input-group">
             <input id="password" type="password" placeholder="Password">
         </div>
 
+        <div class="input-group">
+            <input id="invite" type="text" placeholder="Invite code">
+        </div>
+
         <button class="action-btn" onclick="register()">Register</button>
-        <button class="action-btn" onclick="location.href='login.html'">Back to login</button>
+        <button class="action-btn" onclick="location.href='login.html'">Back</button>
     </div>
 </div>
 
 <script>
-/* Firebase init */
+/* ===== Firebase init ===== */
 firebase.initializeApp({
   apiKey: "AIzaSyB-WET_yswPKZ9SQc13BZg8wumcNpk8tCs",
   authDomain: "avidware-5698f.firebaseapp.com",
@@ -110,46 +118,67 @@ firebase.initializeApp({
   projectId: "avidware-5698f"
 });
 
-/* REGISTER */
-function register() {
-  firebase.auth()
-    .createUserWithEmailAndPassword(email.value, password.value)
-    .then(cred => {
-        return firebase.database()
-            .ref("users/" + cred.user.uid)
-            .set({
-                username: username.value,
-                active: true,
-                hwid: "",
-                lua: ""
-            });
-    })
-    .then(() => {
-        alert("Register OK");
-        location.href = "login.html";
-    })
-    .catch(e => alert(e.message));
+/* ===== REGISTER + INVITE ===== */
+async function register() {
+  const inviteCode = invite.value.trim();
+  if (!inviteCode) {
+    alert("Invite required");
+    return;
+  }
+
+  try {
+    const inviteRef = firebase.database().ref("invites/" + inviteCode);
+    const inviteSnap = await inviteRef.get();
+
+    if (!inviteSnap.exists() || inviteSnap.val().used) {
+      alert("Invalid invite");
+      return;
+    }
+
+    const cred = await firebase.auth()
+      .createUserWithEmailAndPassword(email.value, password.value);
+
+    await firebase.database()
+      .ref("users/" + cred.user.uid)
+      .set({
+        username: username.value,
+        active: true,
+        hwid: "",
+        lua: ""
+      });
+
+    await inviteRef.update({ used: true });
+
+    alert("Register OK");
+    location.href = "login.html";
+
+  } catch (e) {
+    alert(e.message);
+  }
 }
 
-/* DRAG — ТВОЙ ЖЕ */
+/* ===== DRAG LOGIC (ТВОЯ) ===== */
 const draggable = document.getElementById('draggable');
-let drag=false, ox, oy;
+let drag = false, ox = 0, oy = 0;
 
-draggable.addEventListener('mousedown',e=>{
- if(e.target.tagName==='INPUT'||e.target.tagName==='BUTTON')return;
- drag=true;
- const r=draggable.getBoundingClientRect();
- ox=e.clientX-r.left; oy=e.clientY-r.top;
- draggable.style.transform='none';
- draggable.style.left=r.left+'px';
- draggable.style.top=r.top+'px';
+draggable.addEventListener('mousedown', e => {
+  if (e.target.tagName === 'INPUT' || e.target.tagName === 'BUTTON') return;
+  drag = true;
+  const r = draggable.getBoundingClientRect();
+  ox = e.clientX - r.left;
+  oy = e.clientY - r.top;
+  draggable.style.transform = 'none';
+  draggable.style.left = r.left + 'px';
+  draggable.style.top = r.top + 'px';
 });
-document.addEventListener('mousemove',e=>{
- if(!drag)return;
- draggable.style.left=(e.clientX-ox)+'px';
- draggable.style.top=(e.clientY-oy)+'px';
+
+document.addEventListener('mousemove', e => {
+  if (!drag) return;
+  draggable.style.left = (e.clientX - ox) + 'px';
+  draggable.style.top = (e.clientY - oy) + 'px';
 });
-document.addEventListener('mouseup',()=>drag=false);
+
+document.addEventListener('mouseup', () => drag = false);
 </script>
 
 </body>
