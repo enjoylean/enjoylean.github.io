@@ -10,143 +10,124 @@
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
 
 <style>
-/* === ТВОЙ CSS БЕЗ ИЗМЕНЕНИЙ === */
-* {
-    box-sizing: border-box;
-    margin: 0;
-    padding: 0;
-    font-family: 'Segoe UI', sans-serif;
-    user-select: none;
+/* === ТВОЙ СТИЛЬ 1в1 === */
+*{box-sizing:border-box;margin:0;padding:0;font-family:'Segoe UI',sans-serif;user-select:none}
+body{background:#0a0a0a;height:100vh;overflow:hidden}
+.loader-box{
+ width:320px;background:#141414;
+ background-image:radial-gradient(#2a2a2a 1px,transparent 1px);
+ background-size:3px 3px;border:1px solid #111;
+ position:absolute;top:50%;left:50%;
+ transform:translate(-50%,-50%);
+ padding-bottom:40px;box-shadow:0 20px 50px rgba(0,0,0,.9);
+ cursor:grab
 }
-body {
-    background-color: #0a0a0a;
-    height: 100vh;
-    overflow: hidden;
+.loader-box:active{cursor:grabbing}
+.gradient-line{
+ height:2px;width:calc(100% - 4px);margin:2px auto 0;
+ background:linear-gradient(90deg,#00d2ff 0%,#ff00a0 50%,#e5ff00 100%)
 }
-.loader-box {
-    width: 320px;
-    background-color: #141414;
-    background-image: radial-gradient(#2a2a2a 1px, transparent 1px);
-    background-size: 3px 3px;
-    border: 1px solid #111;
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    padding-bottom: 40px;
-    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.9);
-    cursor: grab;
+.form-container{padding:40px 45px 10px;display:flex;flex-direction:column;gap:12px}
+input,button{cursor:default}
+.input-group{position:relative}
+input{
+ width:100%;padding:10px 10px 10px 16px;
+ background:#181818;border:1px solid #080808;
+ color:#ccc;outline:none;font-size:12px;
+ box-shadow:inset 0 2px 5px rgba(0,0,0,.8)
 }
-.loader-box:active { cursor: grabbing; }
-.gradient-line {
-    height: 2px;
-    width: calc(100% - 4px);
-    margin: 2px auto 0;
-    background: linear-gradient(90deg, #00d2ff 0%, #ff00a0 50%, #e5ff00 100%);
+input::placeholder{color:#444;font-weight:bold}
+.action-btn{
+ width:100%;padding:9px;
+ background:linear-gradient(to bottom,#2a2a2a,#111);
+ border:1px solid #050505;color:#d1d1d1;
+ font-weight:bold;font-size:12px;
+ box-shadow:inset 0 1px 0 rgba(255,255,255,.1),
+            0 2px 4px rgba(0,0,0,.6);
+ transition:.2s
 }
-.form-container {
-    padding: 40px 45px 10px;
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-}
-input, button { cursor: default; }
-.input-group { position: relative; }
-input {
-    width: 100%;
-    padding: 10px 10px 10px 16px;
-    background-color: #181818;
-    border: 1px solid #080808;
-    color: #ccc;
-    outline: none;
-    font-size: 12px;
-    box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.8);
-}
-input::placeholder { color: #444; font-weight: bold; }
-.action-btn {
-    width: 100%;
-    padding: 9px;
-    background: linear-gradient(to bottom, #2a2a2a, #111);
-    border: 1px solid #050505;
-    color: #d1d1d1;
-    font-weight: bold;
-    font-size: 12px;
-    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.1), 0 2px 4px rgba(0, 0, 0, 0.6);
-    transition: 0.2s;
-}
-.action-btn:hover {
-    background: linear-gradient(to bottom, #333, #181818);
-    color: #fff;
-}
+.action-btn:hover{background:linear-gradient(to bottom,#333,#181818);color:#fff}
 </style>
 </head>
 
 <body>
 
 <div class="loader-box" id="draggable">
-    <div class="gradient-line"></div>
-    <div class="form-container">
-        <div class="input-group">
-            <input id="email" type="text" placeholder="Email">
-        </div>
-        <div class="input-group">
-            <input id="password" type="password" placeholder="Password">
-        </div>
-        <button class="action-btn" onclick="login()">Login</button>
-        <button class="action-btn" onclick="window.close()">Exit</button>
-    </div>
+ <div class="gradient-line"></div>
+ <div class="form-container">
+   <div class="input-group">
+     <input id="email" type="text" placeholder="Email">
+   </div>
+   <div class="input-group">
+     <input id="password" type="password" placeholder="Password">
+   </div>
+   <button class="action-btn" onclick="login()">Login</button>
+   <button class="action-btn" onclick="window.close()">Exit</button>
+ </div>
 </div>
 
 <script>
-/* Firebase init */
+/* Firebase */
 firebase.initializeApp({
-  apiKey: "AIzaSyB-WET_yswPKZ9SQc13BZg8wumcNpk8tCs",
-  authDomain: "avidware-5698f.firebaseapp.com",
-  databaseURL: "https://avidware-5698f-default-rtdb.firebaseio.com",
-  projectId: "avidware-5698f"
+ apiKey:"AIzaSyB-WET_yswPKZ9SQc13BZg8wumcNpk8tCs",
+ authDomain:"avidware-5698f.firebaseapp.com",
+ databaseURL:"https://avidware-5698f-default-rtdb.firebaseio.com",
+ projectId:"avidware-5698f"
 });
 
-/* LOGIN */
+/* LOGIN + HWID BIND */
 async function login() {
-  try {
-    await firebase.auth().signInWithEmailAndPassword(
-      email.value, password.value
-    );
+ try {
+   if (!window.GS_HWID) {
+     alert("HWID not received");
+     return;
+   }
 
-    const uid = firebase.auth().currentUser.uid;
-    const snap = await firebase.database()
-        .ref("users/" + uid).get();
+   await firebase.auth()
+     .signInWithEmailAndPassword(email.value, password.value);
 
-    if (!snap.exists()) return alert("no db record");
-    if (!snap.val().active) return alert("account disabled");
+   const uid = firebase.auth().currentUser.uid;
+   const ref = firebase.database().ref("users/" + uid);
+   const snap = await ref.get();
 
-    window.GS_PAYLOAD = snap.val().lua;
-    alert("Login OK");
+   if (!snap.exists()) return alert("no user");
+   const data = snap.val();
 
-  } catch (e) {
-    alert(e.message);
-  }
+   if (!data.active) return alert("account disabled");
+
+   if (data.hwid && data.hwid !== GS_HWID) {
+     alert("HWID mismatch");
+     return;
+   }
+
+   if (!data.hwid) {
+     await ref.update({ hwid: GS_HWID });
+   }
+
+   window.GS_PAYLOAD = data.lua;
+   alert("Login OK");
+
+ } catch(e) {
+   alert(e.message);
+ }
 }
 
-/* DRAG LOGIC — ТВОЯ, НЕ ТРОГАЛ */
-const draggable = document.getElementById('draggable');
-let isDragging=false,ox,oy;
-
-draggable.addEventListener('mousedown',e=>{
- if(e.target.tagName==='INPUT'||e.target.tagName==='BUTTON')return;
- isDragging=true;
- const r=draggable.getBoundingClientRect();
- ox=e.clientX-r.left; oy=e.clientY-r.top;
- draggable.style.transform='none';
- draggable.style.left=r.left+'px';
- draggable.style.top=r.top+'px';
+/* DRAG */
+const d=document.getElementById("draggable");
+let g=false,ox=0,oy=0;
+d.addEventListener("mousedown",e=>{
+ if(e.target.tagName==="INPUT"||e.target.tagName==="BUTTON")return;
+ g=true;const r=d.getBoundingClientRect();
+ ox=e.clientX-r.left;oy=e.clientY-r.top;
+ d.style.transform="none";
+ d.style.left=r.left+"px";d.style.top=r.top+"px";
 });
-document.addEventListener('mousemove',e=>{
- if(!isDragging)return;
- draggable.style.left=(e.clientX-ox)+'px';
- draggable.style.top=(e.clientY-oy)+'px';
+document.addEventListener("mousemove",e=>{
+ if(!g)return;
+ d.style.left=(e.clientX-ox)+"px";
+ d.style.top=(e.clientY-oy)+"px";
 });
-document.addEventListener('mouseup',()=>isDragging=false);
+document.addEventListener("mouseup",()=>g=false);
 </script>
 
 </body>
