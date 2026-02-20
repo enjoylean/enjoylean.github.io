@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <title>AVIDWARE Invite Generator</title>
+  <style>
+    body {
+      background: #0e0e0e;
+      color: #eaeaea;
+      font-family: monospace;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+    .box {
+      background: #151515;
+      padding: 20px;
+      border-radius: 6px;
+      width: 360px;
+    }
+    input, button {
+      width: 100%;
+      margin-top: 10px;
+      padding: 8px;
+      background: #0e0e0e;
+      border: 1px solid #333;
+      color: #fff;
+      border-radius: 4px;
+    }
+    button {
+      cursor: pointer;
+      background: #1f1f1f;
+    }
+    .out {
+      margin-top: 10px;
+      word-break: break-all;
+      color: #6cff6c;
+    }
+    .err {
+      margin-top: 10px;
+      color: #ff6c6c;
+    }
+  </style>
+</head>
+<body>
+
+<div class="box">
+  <h3>Invite generator</h3>
+
+  <input id="email" placeholder="Email">
+  <input id="password" type="password" placeholder="Password">
+  <input id="note" placeholder="Invite text (any)">
+  <button onclick="login()">Login</button>
+  <button onclick="createInvite()">Create invite</button>
+
+  <div class="out" id="out"></div>
+  <div class="err" id="err"></div>
+</div>
+
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+
+<script>
+const ADMIN_EMAIL = "hayakikayaki@gmail.com";
+
+firebase.initializeApp({
+  apiKey: "AIzaSyB-WET_yswPKZ9SQc13BZg8wumcNpk8tCs",
+  authDomain: "avidware-5698f.firebaseapp.com",
+  databaseURL: "https://avidware-5698f-default-rtdb.firebaseio.com",
+  projectId: "avidware-5698f"
+});
+
+const out = document.getElementById("out");
+const err = document.getElementById("err");
+
+function rand(len) {
+  const c = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
+  let s = "";
+  for (let i = 0; i < len; i++)
+    s += c[Math.floor(Math.random() * c.length)];
+  return s;
+}
+
+function login() {
+  err.textContent = "";
+  firebase.auth().signInWithEmailAndPassword(
+    email.value,
+    password.value
+  ).then(u => {
+    if (u.user.email !== ADMIN_EMAIL) {
+      err.textContent = "Not admin";
+      firebase.auth().signOut();
+    } else {
+      out.textContent = "Logged as admin";
+    }
+  }).catch(e => err.textContent = e.message);
+}
+
+function createInvite() {
+  err.textContent = "";
+  out.textContent = "";
+
+  const user = firebase.auth().currentUser;
+  if (!user || user.email !== ADMIN_EMAIL) {
+    err.textContent = "Admin only";
+    return;
+  }
+
+  const text = note.value.trim() || "GEN";
+  const code =
+    "AVID-" +
+    text.replace(/[^A-Z0-9]/gi, "").toUpperCase().slice(0, 10) +
+    "-" + rand(4);
+
+  firebase.database().ref("invites/" + code).set({
+    used: false,
+    note: text,
+    created: Math.floor(Date.now() / 1000)
+  }).then(() => {
+    out.textContent = code;
+  }).catch(e => err.textContent = e.message);
+}
+</script>
+
+</body>
+</html>
